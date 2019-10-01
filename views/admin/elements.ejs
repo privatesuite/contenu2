@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<% include ../partials/head %>
+	
+	<style>
+	
+		.element {
+
+			text-decoration: none;
+
+		}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="app">
+		
+		<% include ../partials/menu %>
+		
+		<div class="section main_section">
+			
+			<h1>Elements</h1>
+
+			<input id="searchbox" type="text" style="width: 100%;" placeholder="Search">
+			
+			<% for (const template of [{name: "No Template"}, ...db.templates.templates()]) { %>
+
+				<div class="template">
+
+					<h2><%- template.name %></h2>
+
+					<div class="list">
+						
+						<% for (const element of db.elements.findElements(_ => template.name === "No Template" ? !_.template : _.template === template.id)) { %>
+							
+							<a href="<%- baseUrl %>/element/<%- element.id %>" class="element" data-title="<%- element.fields.title || `Untitled Element` %>">
+								
+								<h3><%- element.fields.title || "Untitled Element" %></h3>
+								
+							</a>
+							
+						<% } %>
+					
+					</div>
+
+				</div>
+
+			<% } %>
+
+		</div>
+		
+	</div>
+
+	<script>
+	
+		document.addEventListener("keypress", () => {
+		
+			document.getElementById("searchbox").focus();	
+
+		});
+
+		document.getElementById("searchbox").addEventListener("input", () => {
+
+			const value = document.getElementById("searchbox").value;
+
+			[...document.querySelectorAll(`.element`)].map(_ => _.style.display = "block");
+			[...document.querySelectorAll(`.template`)].map(_ => _.style.display = "block");
+
+			if (!value.trim()) return;
+
+			[...document.querySelectorAll(`.element`)].map(_ => _.getAttribute("data-title").toLowerCase().indexOf(value.toLowerCase()) === -1 ?  _.style.display = "none" : undefined);
+			[...document.querySelectorAll(`.template`)].map(_ => !_.querySelector(".element:not([style='display: none;'])") ?  _.style.display = "none" : undefined);
+
+		});
+
+	</script>
+
+</body>
+</html>

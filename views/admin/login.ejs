@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+	<% include ../partials/head %>
+
+	<style>
+
+		.login_dialog {
+
+			width: 50%;
+			height: 100%;
+
+		}
+	
+		.login_background_images {
+
+			position: relative;
+
+			width: 50%;
+			
+			overflow: hidden;
+
+		}
+
+		.login_background_images:before {
+
+			position: absolute;
+
+			opacity: 0.5;
+
+			top: -50%;
+			left: -50%;
+
+			width: 200%;
+			height: 200%;
+
+			background: url(https://privatesuitemag.com/img/logo_wordmark_blk.svg), linear-gradient(to right, #f7971e, #ffd200);;
+			background-repeat: repeat;
+
+			content: "";
+			transform: rotate(25deg);
+
+		}
+
+		@media only screen and (max-width: 900px) {
+
+			.login_dialog {width: 100%;}
+			.login_background_images {display: none;}
+
+		}
+
+	</style>
+
+</head>
+<body>
+
+	<div class="app">
+
+		<div class="split" style="height: 100%;">
+
+			<div class="login_dialog">
+
+				<form action="/api/login?respond_with=cookies&path=<%- baseUrl %>&redirect=<%- baseUrl %>" method="POST" class="form section" style="margin: auto; margin-top: 20vh; width: 60%;">
+
+					<h1 style="margin: 0;">Login</h1>
+					<p>Enter your credentials below</p>
+
+					<input type="text" name="username" class="line" placeholder="Username" autocomplete="username">
+
+					<div class="line">
+
+						<input type="password" name="password" placeholder="Password" autocomplete="current-password">
+						<input type="submit" value="Sign In">
+
+					</div>
+
+				</form>
+
+			</div>
+
+			<div class="login_background_images">
+
+
+
+			</div>
+
+		</div>
+
+	</div>
+	
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<% include ../partials/head %>
+	
+	<style>
+	
+		#frontend_status>* {
+
+			position: relative;
+
+			width: 100%;
+
+			margin-bottom: 20px;
+
+		}
+
+		#frontend_status .tag {
+
+			position: absolute;
+
+			right: 0;
+			top: 50%;
+
+			transform: translate(0, -50%);
+
+		}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="app">
+		
+		<% include ../partials/menu %>
+		
+		<div class="section main_section">
+			
+			<h1>Files</h1>
+			
+			
+			<div class="split half_split">
+				
+				<div class="panel">
+					
+					<h2>Clone from Repository</h2>
+					
+					<form action="/api/clone" method="POST" class="form">
+						
+						<input type="text" placeholder="Repository" class="line">
+						<input type="text" placeholder="Branch or tag"> <input type="submit" value="Clone">
+						
+					</form>
+					
+				</div>
+				
+				<div class="panel">
+					
+					<h2>Frontend Status</h2>
+
+					<ul id="frontend_status">
+
+						<li style="color: <%- wwwFiles ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> exists <span class="tag blue">Required</span></li>
+						<li style="color: <%- wwwFiles.find(_ => _.toLowerCase() === '.git') ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> is a git repository <span class="tag blue">Recommended</span></li>
+						<li style="color: <%- wwwFiles.find(_ => _.toLowerCase() === 'index.html') ? '#1e00ff' : '#ff6d6d' %>;"><code>index.html</code> exists <span class="tag blue">Recommended</span></li>
+
+					</ul>
+					
+				</div>
+				
+			</div>
+			
+		</div>
+		
+	</div>
+	
+</body>
+</html>

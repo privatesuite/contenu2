@@ -1,0 +1,8 @@
+# Vendor
+
+/node_modules
+
+# Application
+
+/www
+/database

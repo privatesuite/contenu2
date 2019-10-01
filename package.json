@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.4",
+    "cors": "^2.8.5",
+    "ejs": "^2.7.1",
+    "express": "^4.17.1",
+    "ini": "^1.3.5",
+    "js-sha512": "^0.8.0",
+    "jsonwebtoken": "^8.5.1",
+    "minimist": "^1.2.0",
+    "streamlet": "privatesuite/streamlet"
+  }
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<% include ../partials/head %>
+	
+	<meta name="element-id" content="<%- element.id %>">
+	<meta name="template-id" content="<%- element.template %>">
+
+	<style>
+	
+		#fields>* {
+
+			margin-bottom: 10px;
+
+		}
+
+		#fields>*>* {
+
+			vertical-align: middle;
+
+		}
+
+		#fields .line {
+
+			display: inline-block;
+
+			border-radius: 100px;
+
+			margin-left: 10px;
+			margin-right: 10px;
+
+			opacity: 0.5;
+
+			width: 100px;
+			height: 3px;
+
+			background-color: #1B1B1B;
+
+		}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="app">
+		
+		<% include ../partials/menu %>
+		
+		<div class="section main_section">
+			
+			<h1>Edit Element</h1>
+			
+			<div id="fields">
+				
+				
+
+			</div>
+			
+		</div>
+		
+	</div>
+	
+	<script>
+	
+		(async () => {
+
+			const element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`)).json();
+			const template = document.querySelector("*[name=template-id]").content ? await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json() : undefined;
+
+			for (const fieldName of Object.keys(element.fields)) {
+				
+				const field = document.createElement("div");
+
+				const name = document.createElement("input");
+				name.type = "text";
+				name.value = fieldName;
+
+				field.appendChild(name);
+
+				const line = document.createElement("div");
+				line.classList.add("line");
+
+				field.appendChild(line);
+
+				const value = document.createElement("textarea");
+				value.value = element.fields[fieldName];
+
+				field.appendChild(value);
+
+				document.getElementById("fields").appendChild(field);
+
+			}
+
+		})();
+
+	</script>
+
+</body>
+</html>

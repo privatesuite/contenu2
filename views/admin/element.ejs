@@ -5,7 +5,6 @@
 	<% include ../partials/head %>
 	
 	<meta name="element-id" content="<%- element.id %>">
-	<meta name="template-id" content="<%- element.template %>">
 
 	<style>
 	
@@ -32,14 +31,77 @@
 
 			opacity: 0.5;
 
-			width: 100px;
+			width: 50px;
 			height: 3px;
 
 			background-color: #1B1B1B;
 
 		}
 
+		#fields .delete {
+
+			margin-left: 10px;
+
+		}
+
+		#fields .editor {
+
+			margin-top: 10px;
+
+			transition: 0.2s all;
+
+		}
+
+		/* #templates>*>h3:before {
+
+			content: "";
+
+			opacity: 0;
+
+			transition: 0.2s all;
+
+		}
+
+		#templates>*:hover>h3:before, #templates>.selected>h3:before {
+
+			content: "";
+
+			display: inline-block;
+			opacity: 1;
+			vertical-align: top;
+
+			margin-right: 10px;
+
+			border-radius: 5px;
+
+			width: 5px;
+			height: 30px;
+
+			background-color: #1e00ff;
+			
+		} */
+
+		#templates>*>h3 {
+
+			border-left: none;
+
+			transition: 0.2s all;
+
+		}
+
+		#templates>*:hover>h3, #templates>.selected>h3 {
+
+			border-left: 5px solid #1B1B1B;
+			border-radius: 5px;
+
+			padding-left: 10px;
+
+		}
+
 	</style>
+
+	<script src="https://raw.githack.com/privatesuite/sashimi/master/js/sashimi.js"></script>
+	<link rel="stylesheet" href="https://raw.githack.com/privatesuite/sashimi/master/css/editor.css">
 
 </head>
 <body>
@@ -49,25 +111,51 @@
 		<% include ../partials/menu %>
 		
 		<div class="section main_section">
-			
+
 			<h1>Edit Element</h1>
 			
+			<h2>Template</h2>
+
+			<div class="list" id="templates">
+
+				<% for (const template of [{name: "No Template", id: ""}, ...templates]) { %>
+
+					<div class="<%- template.id === element.template ? 'selected' : '' %>" data-id="<%- template.id %>">
+
+						<h3><%- template.name %></h3>
+
+					</div>
+
+				<% } %>
+
+			</div>
+
+			<h2>Fields</h2>
+
 			<div id="fields">
 				
 				
 
 			</div>
 			
+			<button id="save_changes">Save Changes</button>
+
 		</div>
 		
 	</div>
 	
 	<script>
-	
+
+		let elementObject;
+		let elementFields;
+
 		(async () => {
 
+			await SashimiReady;
+
 			const element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`)).json();
-			const template = document.querySelector("*[name=template-id]").content ? await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json() : undefined;
+			// const template = document.querySelector("*[name=template-id]").content ? await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json() : undefined;
+			// const templates = await (await fetch("/api/templates")).json();
 
 			for (const fieldName of Object.keys(element.fields)) {
 				
@@ -75,6 +163,7 @@
 
 				const name = document.createElement("input");
 				name.type = "text";
+				name.classList.add("key");
 				name.value = fieldName;
 
 				field.appendChild(name);
@@ -85,15 +174,115 @@
 				field.appendChild(line);
 
 				const value = document.createElement("textarea");
+				value.classList.add("value");
 				value.value = element.fields[fieldName];
 
 				field.appendChild(value);
 
+				const line2 = document.createElement("div");
+				line2.classList.add("line");
+
+				field.appendChild(line2);
+
+				const oie = document.createElement("button");
+				oie.innerText = "Open in Editor";
+				oie.classList.add("open_in_editor");
+
+				field.appendChild(oie);
+
+				const del = document.createElement("button");
+				del.innerText = "Delete";
+				del.classList.add("delete");
+
+				field.appendChild(del);
+
+				const rand = Math.random().toString(36).replace("0.", "");
+				const editor = document.createElement("div");
+				editor.id = `ed_${rand}`;
+				editor.classList.add("editor");
+				editor.style.display = "none";
+
+				field.appendChild(editor);
+
 				document.getElementById("fields").appendChild(field);
+
+				Sashimi.createEditorAt(`#ed_${rand}`);
 
 			}
 
+			elementObject = element;
+			elementFields = element.fields;
+
 		})();
+
+		function fieldsToJSON () {
+
+			const o = {};
+			[...document.getElementById("fields").children].map(_ => o[_.querySelector(".key").value] = _.querySelector(".value").value);
+			return o;
+
+		}
+
+		document.addEventListener("click", async event => {
+
+			if (!event.target) return;
+
+			if (event.target.closest("*[data-id]")) {
+				
+				[...document.querySelectorAll("*[data-id]")].map(_ => _.classList.remove("selected"));
+				event.target.closest("*[data-id]").classList.add("selected");
+
+			} if (event.target.id === "save_changes") {
+				
+				notify("Saving changes...");
+
+				await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}/edit`, {
+					
+					method: "POST",
+
+					headers: {
+
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${getCookie("token")}`
+
+					},
+
+					body: JSON.stringify({
+
+						fields: fieldsToJSON(),
+						template: document.querySelector("*[data-id].selected").getAttribute("data-id")
+
+					})
+
+				});
+
+				notify("Changes saved!");
+
+			} else if (event.target.classList.contains("open_in_editor")) {
+
+				event.target.innerText = "Close Editor";
+				event.target.classList.add("close_editor");
+				event.target.classList.remove("open_in_editor");
+
+				Sashimi.setHTML(`#${event.target.parentElement.querySelector(".editor").id}`, event.target.parentElement.querySelector(".value").value);
+				event.target.parentElement.querySelector(".editor").style.display = "block";
+
+			} else if (event.target.classList.contains("close_editor")) {
+
+				event.target.innerText = "Open in Editor";
+				event.target.classList.add("open_in_editor");
+				event.target.classList.remove("close_editor");
+
+				event.target.parentElement.querySelector(".editor").style.display = "none";
+				event.target.parentElement.querySelector(".value").value = Sashimi.extractHTML(`#${event.target.parentElement.querySelector(".editor").id}`);				
+
+			} else if (event.target.classList.contains("delete")) {
+
+				event.target.parentElement.remove();
+
+			}
+
+		});
 
 	</script>
 

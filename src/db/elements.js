@@ -29,6 +29,12 @@ function (db) {
 
 			return this.findElements(_ => true);
 
+		},
+		
+		editElement (id, data) {
+
+			return db.edit(id, data);
+
 		}
 
 	}

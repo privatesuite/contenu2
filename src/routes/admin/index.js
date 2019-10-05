@@ -1,6 +1,7 @@
 const fs = require("fs");
 const db = require("../../db");
 const path = require("path");
+const mime = require("mime");
 const express = require("express");
 const session = require("../../utils/session");
 
@@ -63,7 +64,8 @@ router.get("/element/:id", (req, res, next) => {
 		baseUrl: req.baseUrl,
 		
 		db,
-		element
+		element,
+		templates: db.templates.templates()
 
 	});
 
@@ -77,8 +79,20 @@ router.get("/files", (req, res) => {
 
 		baseUrl: req.baseUrl,
 
+		mime,
+		files: fs.readdirSync(path.join(__dirname, "..", "..", "..", "files")),
 		wwwFiles: fs.existsSync(wwwPath) ? fs.readdirSync(wwwPath) : false
 
+	});
+
+});
+
+router.get("/security", (req, res) => {
+
+	res.render("admin/security", {
+
+		baseUrl: req.baseUrl
+			
 	});
 
 });

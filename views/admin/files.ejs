@@ -6,6 +6,36 @@
 	
 	<style>
 	
+		.file {
+
+			position: relative;
+
+		}
+
+		.file>* {
+
+			display: inline-block;
+
+			vertical-align: middle;
+
+		}
+
+		.file>h3 {
+
+			margin-left: 20px;
+
+		}
+
+		.file>.controls {
+
+			position: absolute;
+
+			right: 0;
+
+			margin-top: 24px;
+
+		}
+
 		#frontend_status>* {
 
 			position: relative;
@@ -40,17 +70,16 @@
 			
 			<h1>Files</h1>
 			
-			
 			<div class="split half_split">
 				
 				<div class="panel">
 					
 					<h2>Clone from Repository</h2>
 					
-					<form action="/api/clone" method="POST" class="form">
+					<form action="/api/clone?redirect=<%- baseUrl %>/files" method="POST" class="form">
 						
-						<input type="text" placeholder="Repository" class="line">
-						<input type="text" placeholder="Branch or tag"> <input type="submit" value="Clone">
+						<input type="text" name="url" placeholder="Repository" class="line">
+						<input type="text" name="branch" value="master" placeholder="Branch or tag"> <input type="submit" value="Clone">
 						
 					</form>
 					
@@ -71,10 +100,88 @@
 				</div>
 				
 			</div>
+
+			<h2>File List</h2>
+
+			<div class="list">
+
+				<% for (const file of files) { %>
+
+					<div>
+
+						<div class="file">
+						
+							<% if (mime.getType(file).indexOf("image") !== -1) { %>
+
+								<img src="/api/file/<%- file -%>" alt="<%- file %>" width="50px">
+								
+							<% } else { %>
+
+								<p class="sub">N/A</p>
+
+							<% } %>
+
+							<h3><input type="text" value="<%- file.split('.')[0] %>" data-extension=".<%- file.split('.').slice(1).join(".") %>" class="file_name" spellcheck="false">.<%- file.split('.').slice(1).join(".") %></h3>
+
+							<div class="controls">
+
+								<button>Delete</button>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				<% } %>
+
+			</div>
 			
 		</div>
 		
 	</div>
 	
+	<script>
+	
+		document.addEventListener("keypress", async event => {
+
+			if (!event.target) return;
+
+			if (event.target.classList.contains("file_name") && event.key.toLowerCase() === "enter") {
+
+				event.target.blur();
+
+				notify("Renaming file...");
+
+				await fetch("/api/files/rename", {
+					
+					method: "POST",
+
+					headers: {
+
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${getCookie("token")}`
+
+					},
+
+					body: JSON.stringify({
+
+						from: event.target.getAttribute("value") + event.target.getAttribute("data-extension"),
+						to: event.target.value + event.target.getAttribute("data-extension")
+
+					})
+
+				});
+
+				notify(`Renamed <strong>${event.target.getAttribute("value")}</strong> to <strong>${event.target.value}</strong>.`);
+
+				event.target.setAttribute("value", event.target.value);
+
+			}
+
+		});
+
+	</script>
+
 </body>
 </html>

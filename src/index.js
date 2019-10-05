@@ -38,6 +38,10 @@ const args = require("minimist")(process.argv.slice(2));
 
 	if (config().admin.enabled) app.use(config().admin.basePath || "/admin", require("./routes/admin"));
 
+	const www = require("./routes/www");
+	www.sync();
+	app.use(www);
+
 	http.createServer(app).listen(config().server.port);
 	if (config().server.secure) https.createServer({
 

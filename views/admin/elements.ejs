@@ -25,7 +25,13 @@
 			
 			<h1>Elements</h1>
 
-			<input id="searchbox" type="text" style="width: 100%;" placeholder="Search">
+			<p>Elements are the data-containing items that power Contenu. Remember to keep your elements clean using templates!</p>
+
+			<div>
+
+				<a href="<%- baseUrl %>/element/new" class="btn" style="display: inline-block; width: 20%; vertical-align: middle; text-decoration: none; text-align: center;">Create</a> <input id="searchbox" type="text" style="width: 79%; vertical-align: middle;" placeholder="Search">
+
+			</div>
 			
 			<% for (const template of [{name: "No Template"}, ...db.templates.templates()]) { %>
 

@@ -132,13 +132,15 @@
 
 			<h2>Fields</h2>
 
+			<button id="new_row">New Row</button>
+
 			<div id="fields">
 				
 				
 
 			</div>
 			
-			<button id="save_changes">Save Changes</button>
+			<button id="save_changes">Save Changes</button> <button id="delete">Delete</button>
 
 		</div>
 		
@@ -149,140 +151,203 @@
 		let elementObject;
 		let elementFields;
 
+		function appendNewField (key, value) {
+
+			const field = document.createElement("div");
+
+			const name = document.createElement("input");
+			name.type = "text";
+			name.classList.add("key");
+			name.value = key;
+
+			field.appendChild(name);
+
+			const line = document.createElement("div");
+			line.classList.add("line");
+
+			field.appendChild(line);
+
+			const valueEl = document.createElement("textarea");
+			valueEl.classList.add("value");
+			valueEl.value = value;
+
+			field.appendChild(valueEl);
+
+			const line2 = document.createElement("div");
+			line2.classList.add("line");
+
+			field.appendChild(line2);
+
+			const oie = document.createElement("button");
+			oie.innerText = "Open in Editor";
+			oie.classList.add("open_in_editor");
+
+			field.appendChild(oie);
+
+			const del = document.createElement("button");
+			del.innerText = "Delete";
+			del.classList.add("delete");
+
+			field.appendChild(del);
+
+			const rand = Math.random().toString(36).replace("0.", "");
+			const editor = document.createElement("div");
+			editor.id = `ed_${rand}`;
+			editor.classList.add("editor");
+			editor.style.display = "none";
+
+			field.appendChild(editor);
+
+			document.getElementById("fields").appendChild(field);
+
+			Sashimi.createEditorAt(`#ed_${rand}`);
+
+		}
+
 		(async () => {
 
 			await SashimiReady;
 
-			const element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`)).json();
+			const templates = await (await fetch("/api/templates")).json();
+			
+			let element;
+			if (document.querySelector("*[name=element-id]").content === "new") element = {fields: {}};
+			else element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`)).json();
 			// const template = document.querySelector("*[name=template-id]").content ? await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json() : undefined;
-			// const templates = await (await fetch("/api/templates")).json();
 
 			for (const fieldName of Object.keys(element.fields)) {
 				
-				const field = document.createElement("div");
-
-				const name = document.createElement("input");
-				name.type = "text";
-				name.classList.add("key");
-				name.value = fieldName;
-
-				field.appendChild(name);
-
-				const line = document.createElement("div");
-				line.classList.add("line");
-
-				field.appendChild(line);
-
-				const value = document.createElement("textarea");
-				value.classList.add("value");
-				value.value = element.fields[fieldName];
-
-				field.appendChild(value);
-
-				const line2 = document.createElement("div");
-				line2.classList.add("line");
-
-				field.appendChild(line2);
-
-				const oie = document.createElement("button");
-				oie.innerText = "Open in Editor";
-				oie.classList.add("open_in_editor");
-
-				field.appendChild(oie);
-
-				const del = document.createElement("button");
-				del.innerText = "Delete";
-				del.classList.add("delete");
-
-				field.appendChild(del);
-
-				const rand = Math.random().toString(36).replace("0.", "");
-				const editor = document.createElement("div");
-				editor.id = `ed_${rand}`;
-				editor.classList.add("editor");
-				editor.style.display = "none";
-
-				field.appendChild(editor);
-
-				document.getElementById("fields").appendChild(field);
-
-				Sashimi.createEditorAt(`#ed_${rand}`);
+				appendNewField(fieldName, element.fields[fieldName]);
 
 			}
 
 			elementObject = element;
 			elementFields = element.fields;
 
-		})();
+			function typeize (value) {
 
-		function fieldsToJSON () {
-
-			const o = {};
-			[...document.getElementById("fields").children].map(_ => o[_.querySelector(".key").value] = _.querySelector(".value").value);
-			return o;
-
-		}
-
-		document.addEventListener("click", async event => {
-
-			if (!event.target) return;
-
-			if (event.target.closest("*[data-id]")) {
-				
-				[...document.querySelectorAll("*[data-id]")].map(_ => _.classList.remove("selected"));
-				event.target.closest("*[data-id]").classList.add("selected");
-
-			} if (event.target.id === "save_changes") {
-				
-				notify("Saving changes...");
-
-				await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}/edit`, {
-					
-					method: "POST",
-
-					headers: {
-
-						"Content-Type": "application/json",
-						"Authorization": `Bearer ${getCookie("token")}`
-
-					},
-
-					body: JSON.stringify({
-
-						fields: fieldsToJSON(),
-						template: document.querySelector("*[data-id].selected").getAttribute("data-id")
-
-					})
-
-				});
-
-				notify("Changes saved!");
-
-			} else if (event.target.classList.contains("open_in_editor")) {
-
-				event.target.innerText = "Close Editor";
-				event.target.classList.add("close_editor");
-				event.target.classList.remove("open_in_editor");
-
-				Sashimi.setHTML(`#${event.target.parentElement.querySelector(".editor").id}`, event.target.parentElement.querySelector(".value").value);
-				event.target.parentElement.querySelector(".editor").style.display = "block";
-
-			} else if (event.target.classList.contains("close_editor")) {
-
-				event.target.innerText = "Open in Editor";
-				event.target.classList.add("open_in_editor");
-				event.target.classList.remove("close_editor");
-
-				event.target.parentElement.querySelector(".editor").style.display = "none";
-				event.target.parentElement.querySelector(".value").value = Sashimi.extractHTML(`#${event.target.parentElement.querySelector(".editor").id}`);				
-
-			} else if (event.target.classList.contains("delete")) {
-
-				event.target.parentElement.remove();
+				if (value === "true") return true;
+				if (value === "false") return false;
+				if (/^[+-]?\d+(\.\d+)?$/.test(value)) return parseFloat(value)
+				return value;
 
 			}
 
-		});
+			function fieldsToJSON () {
+
+				const o = {};
+				[...document.getElementById("fields").children].map(_ => o[_.querySelector(".key").value] = typeize(_.querySelector(".value").value));
+				return o;
+
+			}
+
+			function templatify () {
+
+				const templateId = document.querySelector("*[data-id].selected").getAttribute("data-id");
+
+				if (templateId) {
+
+					const keys = Object.keys(fieldsToJSON());
+					const template = templates.find(_ => _.id === templateId);
+
+					for (const key of Object.keys(template.fields).filter(_ => keys.indexOf(_) === -1)) {
+							
+						appendNewField(key, template.fields[key]);
+
+					}
+
+				}
+
+			}
+
+			templatify();
+
+			document.addEventListener("click", async event => {
+
+				if (!event.target) return;
+
+				if (event.target.closest("*[data-id]")) {
+					
+					[...document.querySelectorAll("*[data-id]")].map(_ => _.classList.remove("selected"));
+					event.target.closest("*[data-id]").classList.add("selected");
+
+					templatify();
+
+				} else if (event.target.id === "new_row") {
+
+					appendNewField("", "");
+
+				} else if (event.target.id === "save_changes") {
+					
+					notify("Saving changes...");
+
+					const res = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}/edit`, {
+						
+						method: "POST",
+
+						headers: {
+
+							"Content-Type": "application/json",
+							"Authorization": `Bearer ${getCookie("token")}`
+
+						},
+
+						body: JSON.stringify({
+
+							fields: fieldsToJSON(),
+							template: document.querySelector("*[data-id].selected").getAttribute("data-id")
+
+						})
+
+					})).json();
+
+					if (res.id) document.querySelector("*[name=element-id]").content = res.id;
+
+					notify("Changes saved!");
+
+				} else if (event.target.id === "delete") {
+
+					const res = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}/delete`, {
+						
+						method: "POST",
+
+						headers: {
+
+							"Authorization": `Bearer ${getCookie("token")}`
+
+						}
+
+					})).json();
+
+					location.href = "<%- baseUrl %>/elements";
+
+				} else if (event.target.classList.contains("open_in_editor")) {
+
+					event.target.innerText = "Close Editor";
+					event.target.classList.add("close_editor");
+					event.target.classList.remove("open_in_editor");
+
+					Sashimi.setHTML(`#${event.target.parentElement.querySelector(".editor").id}`, event.target.parentElement.querySelector(".value").value);
+					event.target.parentElement.querySelector(".editor").style.display = "block";
+
+				} else if (event.target.classList.contains("close_editor")) {
+
+					event.target.innerText = "Open in Editor";
+					event.target.classList.add("open_in_editor");
+					event.target.classList.remove("close_editor");
+
+					event.target.parentElement.querySelector(".editor").style.display = "none";
+					event.target.parentElement.querySelector(".value").value = Sashimi.extractHTML(`#${event.target.parentElement.querySelector(".editor").id}`);				
+
+				} else if (event.target.classList.contains("delete")) {
+
+					event.target.parentElement.remove();
+
+				}
+
+			});
+
+		})();
 
 	</script>
 

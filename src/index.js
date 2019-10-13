@@ -5,6 +5,7 @@ const http = require("http");
 const https = require("https");
 const config = require("./utils/config");
 const express = require("express");
+const compression = require("compression");
 
 const args = require("minimist")(process.argv.slice(2));
 
@@ -19,6 +20,7 @@ const args = require("minimist")(process.argv.slice(2));
 	app.use(require("cookie-parser")());
 	app.use(require("body-parser").json());
 	app.use(require("body-parser").urlencoded({extended: true}));
+	app.use(compression());
 
 	app.use((req, res, next) => {
 

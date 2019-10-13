@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<% include ../partials/head %>
+	
+	<meta name="user-id" content="<%- user.id %>">
+	
+	<script src="https://raw.githack.com/privatesuite/sashimi/master/js/sashimi.js"></script>
+	<link rel="stylesheet" href="https://raw.githack.com/privatesuite/sashimi/master/css/editor.css">
+	
+	<style>
+	
+		#perm>*:not(.selected) {
+
+			opacity: 0.4;
+
+			transition: 0.2s all;
+
+		}
+
+		#perm>*:not(.selected):hover {
+
+			opacity: 1;
+
+		}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="app">
+		
+		<% include ../partials/menu %>
+		
+		<div class="section main_section">
+			
+			<h1>Edit User</h1>
+			
+			<div id="fields" class="form">
+				
+				<div id="perm" class="line">
+
+					<button class="<%- user.perm_type === 'viewer' ? 'selected' : '' %>">Viewer</button>
+					<button class="<%- user.perm_type === 'admin' ? 'selected' : '' %>">Admin</button>
+
+				</div>
+				
+				<input id="username" type="text" value="<%- user.username %>" class="line" placeholder="Username">
+				<input id="email" type="email" value="<%- user.email %>" class="line" placeholder="Email">
+				<input id="password" type="text" class="line" placeholder="Password">
+				
+			</div>
+			
+			<br>
+			
+			<button id="save_changes">Save Changes</button> <button id="delete">Delete</button>
+			
+		</div>
+		
+	</div>
+	
+	<script>
+		
+		document.addEventListener("click", async event => {
+			
+			if (!event.target) return;
+			
+			if (event.target.parentElement.id === "perm") {
+
+				document.querySelector(".selected").classList.remove("selected");
+				event.target.classList.add("selected");
+
+			} else if (event.target.id === "save_changes") {
+				
+				notify("Saving changes...");
+				
+				const res = await (await fetch(`/api/user/${document.querySelector("*[name=user-id]").content}/edit`, {
+					
+					method: "POST",
+					
+					headers: {
+						
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${getCookie("token")}`
+						
+					},
+					
+					body: JSON.stringify({
+						
+						perm_type: document.querySelector(".selected").innerText.toLowerCase(),
+						username: document.getElementById("username").value,
+						email: document.getElementById("email").value,
+						password: document.getElementById("password").value,
+						
+					})
+					
+				})).json();
+				
+				if (res.id) document.querySelector("*[name=user-id]").content = res.id;
+				
+				notify("Changes saved!");
+				
+			} else if (event.target.id === "delete") {
+				
+				const res = await (await fetch(`/api/user/${document.querySelector("*[name=user-id]").content}/delete`, {
+					
+					method: "POST",
+					
+					headers: {
+						
+						"Authorization": `Bearer ${getCookie("token")}`
+						
+					}
+					
+				})).json();
+				
+				location.href = "<%- baseUrl %>/users";
+				
+			}
+			
+		});
+		
+	</script>
+	
+</body>
+</html>

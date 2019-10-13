@@ -37,6 +37,29 @@ function (db) {
 
 			return user;
 
+		},
+
+		editUser (id, data) {
+
+			return db.edit(id, data);
+
+		},
+
+		insertUser (data) {
+
+			return db.insert({
+			
+				type: "user",
+				...data
+				
+			});
+
+		},
+
+		deleteUser (id) {
+
+			return db.delete(id);
+
 		}
 
 	}

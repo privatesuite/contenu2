@@ -76,12 +76,12 @@
 					
 					<h2>Clone from Repository</h2>
 					
-					<form action="/api/clone?redirect=<%- baseUrl %>/files" method="POST" class="form">
+					<div class="form">
 						
-						<input type="text" name="url" placeholder="Repository" class="line">
-						<input type="text" name="branch" value="master" placeholder="Branch or tag"> <input type="submit" value="Clone">
+						<input type="text" id="clone_url" placeholder="Repository" class="line">
+						<input type="text" id="clone_branch" value="master" placeholder="Branch or tag"> <button id="clone">Clone</button>
 						
-					</form>
+					</div>
 					
 				</div>
 				
@@ -143,6 +143,40 @@
 	
 	<script>
 	
+		document.addEventListener("click", async event => {
+			
+			if (!event.target) return;
+
+			if (event.target.id === "clone") {
+
+				notify("Cloning...");
+
+				await fetch("/api/clone", {
+					
+					method: "POST",
+
+					headers: {
+
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${getCookie("token")}`
+
+					},
+
+					body: JSON.stringify({
+
+						url: document.getElementById("clone_url").value,
+						branch: document.getElementById("clone_branch").value
+
+					})
+
+				});
+
+				notify("Cloned!");
+
+			}
+
+		});
+
 		document.addEventListener("keypress", async event => {
 
 			if (!event.target) return;

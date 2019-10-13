@@ -4,14 +4,15 @@ const path = require("path");
 const mime = require("mime");
 const express = require("express");
 const session = require("../../utils/session");
+const permissions = require("../../utils/permissions");
 
 const router = express.Router();
 
+router.use("/static", express.static(path.join(__dirname, "..", "..", "..", "static")));
+
 router.use((req, res, next) => {
 
-	req.session = session.extract(req.cookies.token);
-
-	if (!req.session.username) {
+	if (!permissions.isTokenAdmin(req.cookies.token)) {
 
 		res.render("admin/login", {
 
@@ -52,7 +53,7 @@ router.get("/element/:id", (req, res, next) => {
 
 	const element = db.elements.findElement(_ => _.id === req.params.id);
 
-	if (!element) {
+	if (!element && req.params.id !== "new") {
 
 		next();
 		return;
@@ -64,7 +65,12 @@ router.get("/element/:id", (req, res, next) => {
 		baseUrl: req.baseUrl,
 		
 		db,
-		element,
+		element: element ? element : {
+
+			id: "new",
+			template: ""
+
+		},
 		templates: db.templates.templates()
 
 	});
@@ -93,6 +99,46 @@ router.get("/security", (req, res) => {
 
 		baseUrl: req.baseUrl
 			
+	});
+
+});
+
+router.get("/users", (req, res) => {
+
+	res.render("admin/users", {
+
+		baseUrl: req.baseUrl,
+
+		db
+
+	});
+
+});
+
+router.get("/user/:id", (req, res) => {
+
+	const user = db.users.findUser(_ => _.id === req.params.id);
+
+	if (!user && req.params.id !== "new") {
+
+		next();
+		return;
+
+	}
+
+	res.render("admin/user", {
+
+		baseUrl: req.baseUrl,
+		
+		db,
+		user: user ? user : {
+
+			id: "new",
+			username: "",
+			email: ""
+
+		}
+
 	});
 
 });

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<% include ../partials/head %>
+
+	<style>
+	
+		.user {
+
+			text-decoration: none;
+
+		}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="app">
+		
+		<% include ../partials/menu %>
+		
+		<div class="section main_section">
+			
+			<h1>Users</h1>
+
+			<p>Users are human entities with attached information. Viewers cannot access the CMS while admins can.</p>
+
+			<div>
+
+				<a href="<%- baseUrl %>/user/new" class="btn" style="text-decoration: none; display: block; text-align: center;">Create</a>
+
+			</div>
+
+			<% for (const perm_type of ["Viewer", "Admin"]) { %>
+
+				<h2><%- perm_type %></h2>
+
+				<div class="list">
+					
+					<% for (const user of db.users.users().filter(_ => _.perm_type.toLowerCase() === perm_type.toLowerCase())) { %>
+
+					<a href="<%- baseUrl %>/user/<%- user.id %>" class="user">
+									
+						<h3><%- user.username %></h3>
+							
+					</a>
+
+				<% } %>
+
+				</div>
+
+			<% } %>
+
+		</div>
+		
+	</div>
+	
+</body>
+</html>

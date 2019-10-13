@@ -35,6 +35,23 @@ function (db) {
 
 			return db.edit(id, data);
 
+		},
+
+		insertElement (data) {
+
+			return db.insert({
+			
+				type: "element",
+				...data
+				
+			});
+
+		},
+
+		deleteElement (id) {
+
+			return db.delete(id);
+
 		}
 
 	}

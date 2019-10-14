@@ -42,14 +42,14 @@
 				
 				<div id="perm" class="line">
 
-					<button class="<%- user.perm_type === 'viewer' ? 'selected' : '' %>">Viewer</button>
+					<button class="<%- !user.perm_type || user.perm_type === 'viewer' ? 'selected' : '' %>">Viewer</button>
 					<button class="<%- user.perm_type === 'admin' ? 'selected' : '' %>">Admin</button>
 
 				</div>
 				
 				<input id="username" type="text" value="<%- user.username %>" class="line" placeholder="Username">
 				<input id="email" type="email" value="<%- user.email %>" class="line" placeholder="Email">
-				<input id="password" type="text" class="line" placeholder="Password">
+				<input id="password" type="password" class="line" placeholder="Password">
 				
 			</div>
 			

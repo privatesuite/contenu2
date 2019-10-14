@@ -29,25 +29,29 @@
 
 			<div>
 
-				<a href="<%- baseUrl %>/user/new" class="btn" style="text-decoration: none; display: block; text-align: center;">Create</a>
+				<a href="<%- baseUrl %>/element/new" class="btn" style="display: inline-block; width: 20%; vertical-align: middle; text-decoration: none; text-align: center;">Create</a> <input id="searchbox" type="text" style="width: 79%; vertical-align: middle;" placeholder="Search">
 
 			</div>
 
 			<% for (const perm_type of ["Viewer", "Admin"]) { %>
 
-				<h2><%- perm_type %></h2>
+				<div class="perm_type">
 
-				<div class="list">
-					
-					<% for (const user of db.users.users().filter(_ => _.perm_type.toLowerCase() === perm_type.toLowerCase())) { %>
+					<h2><%- perm_type %></h2>
 
-					<a href="<%- baseUrl %>/user/<%- user.id %>" class="user">
+					<div class="list">
+						
+						<% for (const user of db.users.users().filter(_ => _.perm_type.toLowerCase() === perm_type.toLowerCase())) { %>
+
+							<a href="<%- baseUrl %>/user/<%- user.id %>" class="user" data-username="<%- user.username %>">
+											
+								<h3><%- user.username %></h3>
 									
-						<h3><%- user.username %></h3>
-							
-					</a>
+							</a>
 
-				<% } %>
+						<% } %>
+
+					</div>
 
 				</div>
 
@@ -57,5 +61,29 @@
 		
 	</div>
 	
+	<script>
+	
+		document.addEventListener("keypress", () => {
+		
+			document.getElementById("searchbox").focus();	
+
+		});
+
+		document.getElementById("searchbox").addEventListener("input", () => {
+
+			const value = document.getElementById("searchbox").value;
+
+			[...document.querySelectorAll(`.user`)].map(_ => _.style.display = "block");
+			[...document.querySelectorAll(`.perm_type`)].map(_ => _.style.display = "block");
+
+			if (!value.trim()) return;
+
+			[...document.querySelectorAll(`.user`)].map(_ => _.getAttribute("data-username").toLowerCase().indexOf(value.toLowerCase()) === -1 ?  _.style.display = "none" : undefined);
+			[...document.querySelectorAll(`.perm_type`)].map(_ => !_.querySelector(".user:not([style='display: none;'])") ?  _.style.display = "none" : undefined);
+
+		});
+
+	</script>
+
 </body>
 </html>

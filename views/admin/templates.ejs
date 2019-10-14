@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	
+	<% include ../partials/head %>
+
+	<style>
+	
+		.template {
+
+			text-decoration: none;
+
+		}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="app">
+		
+		<% include ../partials/menu %>
+		
+		<div class="section main_section">
+			
+			<h1>Templates</h1>
+
+			<p>Templates can be used to structure and group elements.</p>
+
+			<div>
+
+				<a href="<%- baseUrl %>/template/new" class="btn" style="display: inline-block; width: 20%; vertical-align: middle; text-decoration: none; text-align: center;">Create</a> <input id="searchbox" type="text" style="width: 79%; vertical-align: middle;" placeholder="Search">
+
+			</div>
+
+			<div class="list" style="margin-top: 20px;">
+						
+				<% for (const template of db.templates.templates()) { %>
+
+					<a href="<%- baseUrl %>/template/<%- template.id %>" class="template" data-name="<%- template.name %>">
+											
+						<h3><%- template.name %></h3>
+									
+					</a>
+
+				<% } %>
+
+			</div>
+
+		</div>
+		
+	</div>
+	
+	<script>
+	
+		document.addEventListener("keypress", () => {
+		
+			document.getElementById("searchbox").focus();	
+
+		});
+
+		document.getElementById("searchbox").addEventListener("input", () => {
+
+			const value = document.getElementById("searchbox").value;
+
+			[...document.querySelectorAll(`.template`)].map(_ => _.style.display = "block");
+
+			if (!value.trim()) return;
+
+			[...document.querySelectorAll(`.template`)].map(_ => _.getAttribute("data-name").toLowerCase().indexOf(value.toLowerCase()) === -1 ?  _.style.display = "none" : undefined);
+
+		});
+
+	</script>
+
+</body>
+</html>

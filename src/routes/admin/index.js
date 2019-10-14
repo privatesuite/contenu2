@@ -31,7 +31,9 @@ router.get("/", (req, res) => {
 
 	res.render("admin/dashboard", {
 
-		baseUrl: req.baseUrl
+		baseUrl: req.baseUrl,
+
+		token: permissions.getUserFromToken(req.cookies.token)
 
 	});
 
@@ -138,6 +140,18 @@ router.get("/user/:id", (req, res) => {
 			email: ""
 
 		}
+
+	});
+
+});
+
+router.get("/templates", (req, res) => {
+
+	res.render("admin/templates", {
+
+		baseUrl: req.baseUrl,
+
+		db
 
 	});
 

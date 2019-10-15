@@ -70,7 +70,8 @@ router.get("/element/:id", (req, res, next) => {
 		element: element ? element : {
 
 			id: "new",
-			template: ""
+			template: "",
+			fields: {}
 
 		},
 		templates: db.templates.templates()

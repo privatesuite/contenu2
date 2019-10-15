@@ -176,7 +176,8 @@ router.get("/template/:id", (req, res, next) => {
 		db,
 		template: template ? template : {
 
-			id: "new"
+			id: "new",
+			name: "New"
 
 		}
 

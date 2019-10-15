@@ -219,7 +219,7 @@ router.post("/element/:id/delete", async (req, res, next) => {
 	
 	if (element) {
 		
-		db.elements.deleteElement(element._id);
+		await db.elements.deleteElement(element._id);
 		
 		res.json({
 			
@@ -290,7 +290,72 @@ router.post("/user/:id/delete", async (req, res, next) => {
 	
 	if (_user) {
 		
-		db.users.deleteUser(_user._id);
+		await db.users.deleteUser(_user._id);
+		
+		res.json({
+			
+			message: "success"
+			
+		});
+		
+	} else next();
+	
+});
+
+router.post("/template/:id/edit", async (req, res, next) => {
+
+	const template = db.templates.findTemplate(_ => _.id === req.params.id);
+	
+	if (typeof req.body.name === "string" && typeof req.body.fields === "object" && (template || req.params.id === "new")) {
+		
+		if (req.params.id === "new") {
+			
+			const id = Math.random().toString(36).replace("0.", "");
+			
+			await db.templates.insertTemplate({
+				
+				id,
+				name: req.body.name,
+				fields: req.body.fields
+				
+			});
+			
+			res.json({
+				
+				id,
+				message: "success"
+				
+			});
+			
+		} else {
+			
+			await db.templates.editTemplate(template._id, {
+				
+				...template,
+				name: req.body.name,
+				fields: req.body.fields
+				
+			});
+			
+			res.json({
+				
+				message: "success"
+				
+			});
+			
+		}
+		
+	} else next();
+	
+});
+
+router.post("/template/:id/delete", async (req, res, next) => {
+
+	const template = db.templates.findTemplate(_ => _.id === req.params.id);
+	
+	if (template) {
+		
+		await db.templates.deleteTemplate(template._id);
 		
 		res.json({
 			

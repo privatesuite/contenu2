@@ -112,7 +112,9 @@
 		
 		<div class="section main_section">
 
-			<h1>Edit Template "<%- template.name %>"</h1>
+			<h1>Edit Template <input type="text" id="name" value="<%- template.name %>" style="display: block; font-size: 42pt;"></h1>
+
+
 
 			<h2>Fields</h2>
 
@@ -250,6 +252,7 @@
 
 						body: JSON.stringify({
 
+							name: document.getElementById("name").value,
 							fields: fieldsToJSON()
 
 						})
@@ -274,7 +277,7 @@
 
 					})).json();
 
-					location.href = "<%- baseUrl %>/template";
+					location.href = "<%- baseUrl %>/templates";
 
 				} else if (event.target.classList.contains("open_in_editor")) {
 

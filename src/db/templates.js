@@ -26,6 +26,29 @@ function (db) {
 
 			return this.findTemplates(_ => true);
 
+		},
+		
+		editTemplate (id, data) {
+
+			return db.edit(id, data);
+
+		},
+
+		insertTemplate (data) {
+
+			return db.insert({
+			
+				type: "template",
+				...data
+				
+			});
+
+		},
+
+		deleteTemplate (id) {
+
+			return db.delete(id);
+
 		}
 
 	}

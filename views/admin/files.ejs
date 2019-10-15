@@ -92,8 +92,8 @@
 					<ul id="frontend_status">
 
 						<li style="color: <%- wwwFiles ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> exists <span class="tag blue">Required</span></li>
-						<li style="color: <%- wwwFiles.find(_ => _.toLowerCase() === '.git') ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> is a git repository <span class="tag blue">Recommended</span></li>
-						<li style="color: <%- wwwFiles.find(_ => _.toLowerCase() === 'index.html') ? '#1e00ff' : '#ff6d6d' %>;"><code>index.html</code> exists <span class="tag blue">Recommended</span></li>
+						<li style="color: <%- wwwFiles && wwwFiles.find(_ => _.toLowerCase() === '.git') ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> is a git repository <span class="tag blue">Recommended</span></li>
+						<li style="color: <%- wwwFiles && wwwFiles.find(_ => _.toLowerCase() === 'index.html') ? '#1e00ff' : '#ff6d6d' %>;"><code>index.html</code> exists <span class="tag blue">Recommended</span></li>
 
 					</ul>
 					

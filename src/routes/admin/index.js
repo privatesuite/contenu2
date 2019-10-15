@@ -157,4 +157,30 @@ router.get("/templates", (req, res) => {
 
 });
 
+router.get("/template/:id", (req, res, next) => {
+
+	const template = db.templates.findTemplate(_ => _.id === req.params.id);
+
+	if (!template && req.params.id !== "new") {
+
+		next();
+		return;
+
+	}
+
+	res.render("admin/template", {
+
+		baseUrl: req.baseUrl,
+		
+		db,
+		template: template ? template : {
+
+			id: "new"
+
+		}
+
+	});
+
+});
+
 module.exports = router;

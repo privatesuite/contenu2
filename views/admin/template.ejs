@@ -4,7 +4,7 @@
 	
 	<% include ../partials/head %>
 	
-	<meta name="element-id" content="<%- element.id %>">
+	<meta name="template-id" content="<%- template.id %>">
 
 	<style>
 	
@@ -112,23 +112,7 @@
 		
 		<div class="section main_section">
 
-			<h1>Edit Element "<%- element.fields.title || element.id %>"</h1>
-			
-			<h2>Template</h2>
-
-			<div class="list" id="templates">
-
-				<% for (const template of [{name: "No Template", id: ""}, ...templates]) { %>
-
-					<div class="<%- template.id === element.template ? 'selected' : '' %>" data-id="<%- template.id %>">
-
-						<h3><%- template.name %></h3>
-
-					</div>
-
-				<% } %>
-
-			</div>
+			<h1>Edit Template "<%- template.name %>"</h1>
 
 			<h2>Fields</h2>
 
@@ -148,8 +132,8 @@
 	
 	<script>
 
-		let elementObject;
-		let elementFields;
+		let templateObject;
+		let templateFields;
 
 		function appendNewField (key, value) {
 
@@ -210,19 +194,19 @@
 
 			const templates = await (await fetch("/api/templates")).json();
 			
-			let element;
-			if (document.querySelector("*[name=element-id]").content === "new") element = {fields: {}};
-			else element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`)).json();
+			let template;
+			if (document.querySelector("*[name=template-id]").content === "new") template = {fields: {}};
+			else template = await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json();
 			// const template = document.querySelector("*[name=template-id]").content ? await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json() : undefined;
 
-			for (const fieldName of Object.keys(element.fields)) {
+			for (const fieldName of Object.keys(template.fields)) {
 				
-				appendNewField(fieldName, element.fields[fieldName]);
+				appendNewField(fieldName, template.fields[fieldName]);
 
 			}
 
-			elementObject = element;
-			elementFields = element.fields;
+			templateObject = template;
+			templateFields = template.fields;
 
 			function typeize (value) {
 
@@ -241,39 +225,11 @@
 
 			}
 
-			function templatify () {
-
-				const templateId = document.querySelector("*[data-id].selected").getAttribute("data-id");
-
-				if (templateId) {
-
-					const keys = Object.keys(fieldsToJSON());
-					const template = templates.find(_ => _.id === templateId);
-
-					for (const key of Object.keys(template.fields).filter(_ => keys.indexOf(_) === -1)) {
-							
-						appendNewField(key, template.fields[key]);
-
-					}
-
-				}
-
-			}
-
-			templatify();
-
 			document.addEventListener("click", async event => {
 
 				if (!event.target) return;
 
-				if (event.target.closest("*[data-id]")) {
-					
-					[...document.querySelectorAll("*[data-id]")].map(_ => _.classList.remove("selected"));
-					event.target.closest("*[data-id]").classList.add("selected");
-
-					templatify();
-
-				} else if (event.target.id === "new_row") {
+				if (event.target.id === "new_row") {
 
 					appendNewField("", "");
 
@@ -281,7 +237,7 @@
 					
 					notify("Saving changes...");
 
-					const res = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}/edit`, {
+					const res = await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}/edit`, {
 						
 						method: "POST",
 
@@ -294,20 +250,19 @@
 
 						body: JSON.stringify({
 
-							fields: fieldsToJSON(),
-							template: document.querySelector("*[data-id].selected").getAttribute("data-id")
+							fields: fieldsToJSON()
 
 						})
 
 					})).json();
 
-					if (res.id) document.querySelector("*[name=element-id]").content = res.id;
+					if (res.id) document.querySelector("*[name=template-id]").content = res.id;
 
 					notify("Changes saved!");
 
 				} else if (event.target.id === "delete") {
 
-					const res = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}/delete`, {
+					const res = await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}/delete`, {
 						
 						method: "POST",
 
@@ -319,7 +274,7 @@
 
 					})).json();
 
-					location.href = "<%- baseUrl %>/elements";
+					location.href = "<%- baseUrl %>/template";
 
 				} else if (event.target.classList.contains("open_in_editor")) {
 

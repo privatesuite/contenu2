@@ -48,6 +48,8 @@ router.post("/login", (req, res) => {
 	
 });
 
+// Public API
+
 router.get("/users", (req, res) => {
 	
 	res.json(db.users.users().map(_ => ({
@@ -82,8 +84,74 @@ router.get("/element/:id", (req, res, next) => {
 	
 });
 
-router.post("/element/:id/edit", async (req, res, next) => {
+
+router.get("/template/:id", (req, res, next) => {
 	
+	const template = db.templates.findTemplate(_ => _.id === req.params.id);
+	
+	if (template) res.json(template);
+	else next();
+	
+});
+
+router.get("/user/:id", (req, res, next) => {
+
+	const user = db.users.findUser(_ => _.id === req.params.id);
+	
+	if (user) res.json({
+		
+		...user,
+		email: "",
+		password: ""
+
+	});
+	else next();
+
+});
+
+router.get("/user/byUsername/:username", (req, res, next) => {
+
+	const user = db.users.findUser(_ => _.username === req.params.username);
+	
+	if (user) res.json({
+		
+		...user,
+		email: "",
+		password: ""
+
+	});
+	else next();
+
+});
+
+router.get("/file/:file", (req, res) => {
+	
+	if (fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.params.file))) {
+		
+		res.writeHead(200, {
+			
+			"Content-Type": "application/octet-stream"
+			
+		});
+		
+		fs.createReadStream(path.join(__dirname, "..", "..", "..", "files", req.params.file)).pipe(res);
+		
+	} else {
+		
+		res.end(JSON.stringify({
+			
+			message: "invalid_file"
+			
+		}));
+		
+	}
+	
+});
+
+// Private API
+
+router.use((req, res, next) => {
+
 	if (!permissions.isTokenAdmin(permissions.tokenFromRequest(req))) {
 		
 		res.json({
@@ -94,7 +162,11 @@ router.post("/element/:id/edit", async (req, res, next) => {
 		
 		return;
 		
-	}
+	} else next();
+
+});
+
+router.post("/element/:id/edit", async (req, res, next) => {
 
 	const element = db.elements.findElement(_ => _.id === req.params.id);
 	
@@ -142,18 +214,6 @@ router.post("/element/:id/edit", async (req, res, next) => {
 });
 
 router.post("/element/:id/delete", async (req, res, next) => {
-	
-	if (!permissions.isTokenAdmin(permissions.tokenFromRequest(req))) {
-		
-		res.json({
-			
-			message: "invalid_credentials"
-			
-		});
-		
-		return;
-		
-	}
 
 	const element = db.elements.findElement(_ => _.id === req.params.id);
 	
@@ -171,59 +231,8 @@ router.post("/element/:id/delete", async (req, res, next) => {
 	
 });
 
-router.get("/template/:id", (req, res, next) => {
-	
-	const template = db.templates.findTemplate(_ => _.id === req.params.id);
-	
-	if (template) res.json(template);
-	else next();
-	
-});
-
-router.get("/user/:id", (req, res, next) => {
-
-	const user = db.users.findUser(_ => _.id === req.params.id);
-	
-	if (user) res.json({
-		
-		...user,
-		email: "",
-		password: ""
-
-	});
-	else next();
-
-});
-
-router.get("/user/byUsername/:username", (req, res, next) => {
-
-	const user = db.users.findUser(_ => _.username === req.params.username);
-	
-	if (user) res.json({
-		
-		...user,
-		email: "",
-		password: ""
-
-	});
-	else next();
-
-});
-
 router.post("/user/:id/edit", async (req, res, next) => {
 	
-	if (!permissions.isTokenAdmin(permissions.tokenFromRequest(req))) {
-		
-		res.json({
-			
-			message: "invalid_credentials"
-			
-		});
-		
-		return;
-		
-	}
-
 	const _user = db.users.findUser(_ => _.id === req.params.id);
 
 	if (typeof req.body.username === "string" && typeof req.body.perm_type === "string" && (_user || req.params.id === "new")) {
@@ -276,18 +285,6 @@ router.post("/user/:id/edit", async (req, res, next) => {
 });
 
 router.post("/user/:id/delete", async (req, res, next) => {
-	
-	if (!permissions.isTokenAdmin(permissions.tokenFromRequest(req))) {
-		
-		res.json({
-			
-			message: "invalid_credentials"
-			
-		});
-		
-		return;
-		
-	}
 
 	const _user = db.users.findUser(_ => _.id === req.params.id);
 	
@@ -306,18 +303,6 @@ router.post("/user/:id/delete", async (req, res, next) => {
 });
 
 router.post("/clone", async (req, res) => {
-	
-	if (!permissions.isTokenAdmin(permissions.tokenFromRequest(req))) {
-		
-		res.json({
-			
-			message: "invalid_credentials"
-			
-		});
-		
-		return;
-		
-	}
 	
 	if (req.body.url) {
 		
@@ -344,46 +329,7 @@ router.post("/clone", async (req, res) => {
 	
 });
 
-router.get("/file/:file", (req, res) => {
-	
-	if (fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.params.file))) {
-		
-		res.writeHead(200, {
-			
-			"Content-Type": "application/octet-stream"
-			
-		});
-		
-		fs.createReadStream(path.join(__dirname, "..", "..", "..", "files", req.params.file)).pipe(res);
-		
-	} else {
-		
-		res.end(JSON.stringify({
-			
-			message: "invalid_file"
-			
-		}));
-		
-	}
-	
-});
-
 router.post("/files/rename", (req, res) => {
-	
-	const token = session.extract((req.headers.authorization || "").replace(/bearer/i, "").trim());
-	const user = db.users.findUser(_ => _.username === token.username);
-	
-	if (!user || user.perm_type !== "admin") {
-		
-		res.json({
-			
-			message: "invalid_credentials"
-			
-		});
-		
-		return;
-		
-	}
 	
 	if (typeof req.body.from === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.from)) && typeof req.body.to === "string") {
 		

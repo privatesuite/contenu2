@@ -116,7 +116,7 @@ router.all("*", async (req, res, next) => {
 
 			if (out.auto) {
 
-				if (fs.existsSync(file)) _();
+				if (fs.existsSync(file) && !fs.statSync(file).isDirectory()) _();
 				else {
 
 					next();

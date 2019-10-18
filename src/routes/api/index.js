@@ -126,7 +126,9 @@ router.get("/user/byUsername/:username", (req, res, next) => {
 
 router.get("/file/:file", (req, res) => {
 	
-	if (fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.params.file))) {
+	const file = path.join(__dirname, "..", "..", "..", "files", req.params.file);
+
+	if (fs.existsSync(file) && !fs.statSync(file).isDirectory()) {
 		
 		res.writeHead(200, {
 			
@@ -134,7 +136,7 @@ router.get("/file/:file", (req, res) => {
 			
 		});
 		
-		fs.createReadStream(path.join(__dirname, "..", "..", "..", "files", req.params.file)).pipe(res);
+		fs.createReadStream(file).pipe(res);
 		
 	} else {
 		

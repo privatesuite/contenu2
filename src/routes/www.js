@@ -31,7 +31,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 					complete = true;
 	
 					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
-					res.ejs = (file, params) => res.render(file, { db, ...params });
+					res.ejs = (file, params) => res.render(path.join(wwwFolder, file), { db, ...params });
 					handler(req, res);
 					resolve({  });
 	

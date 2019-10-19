@@ -26,8 +26,9 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			async: true,
 			...opts
 			
-		}, (err, html) => {
+		}, async (err, html) => {
 			
+			html = await html;
 			console.log(err, typeof html, html);
 			if (err) {
 				

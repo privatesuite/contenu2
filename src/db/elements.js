@@ -21,7 +21,12 @@ function (db) {
 
 		findElement (_) {
 
-			const element = db.findOne(__ => __.type === "element" && _(__));
+			const element = db.findOne(__ => __.type === "element" && _({
+				
+				...__,
+				templateName: templateNameFromId(__.template)
+				
+			}));
 
 			return {
 
@@ -34,7 +39,12 @@ function (db) {
 
 		findElements (_) {
 
-			return db.find(__ => __.type === "element" && _(__)).map(__ => ({
+			return db.find(__ => __.type === "element" && _({
+				
+				...__,
+				templateName: templateNameFromId(__.template)
+				
+			})).map(__ => ({
 
 				...__,
 				templateName: templateNameFromId(__.template)

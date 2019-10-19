@@ -13,6 +13,9 @@ const wwwFolder = path.join(__dirname, "..", "..", "www");
 
 async function wwwRun (req, res, code = wwwSrc, other) {
 	
+	res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
+	res.ejs = async (file, params) => res.end(await render(path.join(wwwFolder, file), { db, ...params }));
+
 	let methods = {};
 	let complete = false;
 	
@@ -55,10 +58,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 					
 					req.params = match;
 					complete = true;
-					
-					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
-					res.ejs = async (file, params) => res.end(await render(path.join(wwwFolder, file), { db, ...params }));
-					
+				
 					try {
 						
 						handler(req, res);

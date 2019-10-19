@@ -11,45 +11,17 @@ module.exports =
  */
 function (db) {
 
-	function templateNameFromId (id) {
-
-		return (db.findOne(_ => _.type === "template" && _.id === id) || {name: ""}).name;
-	
-	}
-
 	return {
 
 		findElement (_) {
 
-			const element = db.findOne(__ => __.type === "element" && _({
-				
-				...__,
-				templateName: templateNameFromId(__.template)
-				
-			}));
-
-			return {
-
-				...element,
-				templateName: templateNameFromId(element.template)
-
-			}
+			return db.findOne(__ => __.type === "element" && _(__));
 
 		},
 
 		findElements (_) {
 
-			return db.find(__ => __.type === "element" && _({
-				
-				...__,
-				templateName: templateNameFromId(__.template)
-				
-			})).map(__ => ({
-
-				...__,
-				templateName: templateNameFromId(__.template)
-
-			}));
+			return db.find(__ => __.type === "element" && _(__));
 
 		},
 

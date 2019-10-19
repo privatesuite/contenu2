@@ -10,6 +10,12 @@ function (db) {
 
 	return {
 
+		templateNameFromId (id) {
+
+			return (this.findTemplate(_ => _.id === id) || {name: ""}).name;
+		
+		},
+
 		findTemplate (_) {
 
 			return db.findOne(__ => __.type === "template" && _(__));

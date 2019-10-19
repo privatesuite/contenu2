@@ -28,6 +28,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 		}, (err, html) => {
 			
+			console.log(err);
 			if (err) {
 				
 				error(req, res, e);

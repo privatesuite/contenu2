@@ -21,6 +21,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 	
 	const render = (view, opts) => new Promise((resolve, reject) => {
 		
+		try {
 		res.render(view, {
 			
 			async: true,
@@ -28,7 +29,6 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 		}, (err, html) => {
 			
-			console.log(err);
 			if (err) {
 				
 				error(req, res, e);
@@ -38,6 +38,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			} else resolve(html);
 			
 		});
+	}  catch (e) {console.log("A")}
 		
 	});
 	

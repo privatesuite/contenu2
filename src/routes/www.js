@@ -21,17 +21,27 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 
 	const render = (view, opts) => new Promise((resolve, reject) => {
 
-		res.render(view, {
+		try {
 
-			async: true,
-			...opts
+			res.render(view, {
 
-		}, (err, html) => {
+				async: true,
+				...opts
 
-			if (err) reject(err);
-			else resolve(html);
+			}, (err, html) => {
 
-		})
+				if (err) reject(err);
+				else resolve(html);
+
+			});
+		
+		} catch (e) {
+
+			if (error) error(req, res, e);
+			complete = true;
+			// throw e;
+
+		}
 
 	});
 

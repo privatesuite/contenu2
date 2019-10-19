@@ -31,6 +31,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 					complete = true;
 	
 					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
+					res.ejs = (file, params) => res.render(file, { db, ...params });
 					handler(req, res);
 					resolve({  });
 	
@@ -95,12 +96,6 @@ router.all("*", async (req, res, next) => {
 		function _ (_file = file, status = 200) {
 
 			const stat = fs.statSync(_file);
-
-			if (file.endsWith(".ejs")) return res.render(file, {
-
-				db
-
-			});
 
 			res.writeHead(status, {
 

@@ -31,7 +31,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			html.then(_ => resolve(html));
 			html.catch(_ => {
 
-				if (error) error(req, res, e);
+				if (error) error(req, res, html);
 				complete = true;
 
 			});

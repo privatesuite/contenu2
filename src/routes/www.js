@@ -36,7 +36,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 
 		for (const method of http.METHODS.map(_ => _.toLowerCase())) {
 		
-			methods[method] = async (route, handler) => {
+			methods[method] = (route, handler) => {
 	
 				if (complete) return;
 	
@@ -47,7 +47,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 					complete = true;
 	
 					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
-					res.ejs = (file, params) => await render(path.join(wwwFolder, file), { db, ...params });
+					res.ejs = async (file, params) => await render(path.join(wwwFolder, file), { db, ...params });
 
 					handler(req, res);
 					resolve({  });

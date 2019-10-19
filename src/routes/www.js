@@ -16,6 +16,9 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 	let methods = {};
 	let complete = false;
 
+	let error;
+	let notFound;
+
 	const render = (view, opts) => new Promise((resolve, reject) => {
 
 		res.render(view, {
@@ -38,6 +41,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 		
 			methods[method] = (route, handler) => {
 	
+				if (req.method.toLowerCase() !== method) return;
 				if (complete) return;
 	
 				let match = reqPath(route, req.url);
@@ -50,7 +54,17 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
 					res.ejs = async (file, params) => res.end(await render(path.join(wwwFolder, file), { db, ...params }));
 
-					handler(req, res);
+					try {
+						
+						handler(req, res);
+
+					} catch (e) {
+
+						if (error) error(req, res, e);
+						complete = true;
+						throw e;
+
+					}
 					resolve({  });
 	
 				}
@@ -83,6 +97,18 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 				
 				},
 				
+				error (callback) {
+
+					error = callback;
+
+				},
+
+				notFound (callback) {
+
+					notFound = callback;
+					
+				},
+
 				...methods				
 				
 			}
@@ -91,7 +117,12 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 
 		setTimeout(() => {
 
-			if (!complete) resolve({ ignore: true });
+			if (!complete) {
+			
+				if (notFound) notFound(req, res);
+				else resolve({ ignore: true });
+
+			}
 
 		}, 10);
 

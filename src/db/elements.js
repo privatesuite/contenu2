@@ -3,12 +3,6 @@
 const sha512 = require("js-sha512");
 const Streamlet = require("streamlet");
 
-function templateNameFromId (id) {
-
-	return db.findOne(_ => _.type === "template" && _.id === id).name;
-
-}
-
 module.exports =
 
 /**
@@ -16,6 +10,12 @@ module.exports =
  * @param {Streamlet} db 
  */
 function (db) {
+
+	function templateNameFromId (id) {
+
+		return db.findOne(_ => _.type === "template" && _.id === id).name;
+	
+	}
 
 	return {
 

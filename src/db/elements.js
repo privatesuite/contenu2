@@ -13,7 +13,7 @@ function (db) {
 
 	function templateNameFromId (id) {
 
-		return db.findOne(_ => _.type === "template" && _.id === id).name;
+		return (db.findOne(_ => _.type === "template" && _.id === id) || {name: ""}).name;
 	
 	}
 

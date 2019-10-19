@@ -44,6 +44,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 				
 				if (match) {
 					
+					req.params = match;
 					complete = true;
 	
 					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);

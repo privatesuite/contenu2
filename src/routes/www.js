@@ -1,3 +1,4 @@
+const db = require("../db");
 const fs = require("fs");
 const vm2 = require("vm2");
 const path = require("path");
@@ -94,6 +95,12 @@ router.all("*", async (req, res, next) => {
 		function _ (_file = file, status = 200) {
 
 			const stat = fs.statSync(_file);
+
+			if (file.endsWith(".ejs")) return res.render(file, {
+
+				db
+
+			});
 
 			res.writeHead(status, {
 

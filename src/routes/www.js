@@ -26,10 +26,15 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			async: true,
 			...opts
 			
-		}, async (err, html) => {
+		}, (err, html) => {
 			
 			html.then(_ => resolve(html));
-			html.catch(_ => console.log(1));
+			html.catch(_ => {
+
+				if (error) error(req, res, e);
+				complete = true;
+
+			});
 			
 		});
 		

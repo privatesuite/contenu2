@@ -16,22 +16,39 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 	let methods = {};
 	let complete = false;
 
+	const render = (view, opts) => new Promise((resolve, reject) => {
+
+		res.render(view, {
+
+			async: true,
+			...opts
+
+		}, (err, html) => {
+
+			if (err) reject(err);
+			else resolve(html);
+
+		})
+
+	});
+
 	return new Promise((resolve, reject) => {
 
 		for (const method of http.METHODS.map(_ => _.toLowerCase())) {
 		
-			methods[method] = (route, handler) => {
+			methods[method] = async (route, handler) => {
 	
 				if (complete) return;
 	
 				let match = reqPath(route, req.url);
 				
 				if (match) {
-	
+					
 					complete = true;
 	
 					res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
-					res.ejs = (file, params) => res.render(path.join(wwwFolder, file), { db, ...params });
+					res.ejs = (file, params) => await render(path.join(wwwFolder, file), { db, ...params });
+
 					handler(req, res);
 					resolve({  });
 	

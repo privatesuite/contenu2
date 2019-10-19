@@ -28,14 +28,8 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 		}, async (err, html) => {
 			
-			console.log(err, html + "");
-			if (err) {
-				
-				error(req, res, e);
-				complete = true;
-				// reject(err);
-				
-			} else resolve(html);
+			html.then(_ => resolve(html));
+			html.catch(_ => console.log(1));
 			
 		});
 		

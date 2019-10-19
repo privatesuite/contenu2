@@ -137,7 +137,7 @@ router.get("/user/:id", (req, res) => {
 		user: user ? user : {
 
 			id: "new",
-			username: "",
+			username: "New User",
 			email: ""
 
 		}
@@ -177,7 +177,7 @@ router.get("/template/:id", (req, res, next) => {
 		template: template ? template : {
 
 			id: "new",
-			name: "New"
+			name: "New Template"
 
 		}
 

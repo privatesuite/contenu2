@@ -250,7 +250,7 @@ router.post("/user/:id/edit", async (req, res, next) => {
 				username: req.body.username,
 				email: req.body.email,
 				password: req.body.password ? sha512.sha512(req.body.password) : _user.password,
-				fields: req.body.fields ? req.body.fields : _user.fields
+				fields: req.body.fields || {}
 				
 			});
 			

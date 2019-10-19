@@ -62,7 +62,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 
 						if (error) error(req, res, e);
 						complete = true;
-						throw e;
+						// throw e;
 
 					}
 					resolve({  });

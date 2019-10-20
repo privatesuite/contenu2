@@ -17,7 +17,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 	res.ejs = async (file, params, contentType) => {
 	
 		res.set("Content-Type", contentType || "text/html");
-		res.end(await render(path.join(wwwFolder, file), { db, ...params }));
+		res.send(await render(path.join(wwwFolder, file), { db, ...params }));
 
 	}
 
@@ -54,15 +54,15 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 			methods[method] = (route, handler) => {
 				
-				if (req.method.toLowerCase() === "head") {
+				// if (req.method.toLowerCase() === "head") {
 
-					complete = true;
-					res.status(200);
+				// 	complete = true;
+				// 	res.status(200);
 
-					res.end();
-					return;
+				// 	res.end();
+				// 	return;
 
-				}
+				// }
 				if (req.method.toLowerCase() !== method) return;
 				if (complete) return;
 				
@@ -163,7 +163,7 @@ router.all("*", async (req, res, next) => {
 		
 		function _ (_file = file, status = 200) {
 			
-			const stat = fs.statSync(_file);
+			/*const stat = fs.statSync(_file);
 			
 			res.writeHead(status, {
 				
@@ -179,7 +179,9 @@ router.all("*", async (req, res, next) => {
 
 			}
 
-			fs.createReadStream(_file).pipe(res);
+			fs.createReadStream(_file).pipe(res);*/
+
+			res.status(status).sendFile(_file);
 			
 		}
 		

@@ -45,10 +45,12 @@ async function wwwRun (req, res, other) {
 
 	for (const route of Object.keys(routes).filter(_ => !_.startsWith("__") && routes[_].method === req.method.toLowerCase())) {
 
-		console.log(route, req.path);
+		// console.log(route, req.path);
 		let match = reqPath(route, req.path);
 
 		if (match) {
+
+			console.log(route, req.path);
 
 			if (route.callback) {
 				
@@ -159,7 +161,7 @@ router.all("*", async (req, res, next) => {
 		
 		if (!wwwSrc) _(); else {
 			
-			const out = await wwwRun(req, res, {
+			const out = wwwRun(req, res, {
 				
 				file: _
 				

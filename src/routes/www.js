@@ -45,20 +45,17 @@ async function wwwRun (req, res, other) {
 
 	for (const route of Object.keys(routes).filter(_ => !_.startsWith("__") && routes[_].method === req.method.toLowerCase())) {
 
-		// console.log(route, req.path);
 		let match = reqPath(route, req.path);
 
 		if (match) {
 
-			console.log(route, req.path);
-
-			if (route.callback) {
+			if (routes[route].callback) {
 				
-				route.params = match;
-				route.callback(req, res);
+				routes[route].params = match;
+				routes[route].callback(req, res);
 				return {};
 
-			} else if (route.auto) return {auto: true};
+			} else if (routes[route].auto) return {auto: true};
 
 		}
 

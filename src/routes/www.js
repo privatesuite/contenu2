@@ -43,6 +43,7 @@ async function wwwRun (req, res, other) {
 
 	}
 
+	console.log(routes);
 	for (const route of Object.keys(routes).filter(_ => !_.startsWith("__") && _.method === req.method.toLowerCase())) {
 	
 		let match = reqPath(route, req.path);
@@ -62,6 +63,7 @@ async function wwwRun (req, res, other) {
 
 	if (routes["__notFound__"]) routes["__notFound__"](req, res);
 	else res.end();
+	return {};
 
 }
 

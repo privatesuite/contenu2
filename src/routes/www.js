@@ -92,11 +92,11 @@ function initRoutes (code = wwwSrc) {
 			
 			sandbox: {
 				
-				auto (routes) {
+				auto (_routes) {
 					
-					if (typeof route === "string") routes = [routes];
+					if (typeof route === "string") _routes = [_routes];
 					
-					for (const route of routes) {
+					for (const route of _routes) {
 						
 						routes[route] = {
 

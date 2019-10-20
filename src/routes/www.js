@@ -45,6 +45,7 @@ async function wwwRun (req, res, other) {
 
 	for (const route of Object.keys(routes).filter(_ => !_.startsWith("__") && routes[_].method === req.method.toLowerCase())) {
 
+		console.log(route)
 		let match = reqPath(route, req.path);
 
 		if (match) {

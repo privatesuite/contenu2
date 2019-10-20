@@ -49,10 +49,10 @@ async function wwwRun (req, res, other) {
 
 		if (match) {
 
-			if (routes[route].callback) {
+			if (routes[route].handler) {
 				
-				routes[route].params = match;
-				routes[route].callback(req, res);
+				req.params = match;
+				routes[route].handler(req, res);
 				return {};
 
 			} else if (routes[route].auto) return {auto: true};

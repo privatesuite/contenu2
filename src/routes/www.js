@@ -164,7 +164,7 @@ router.all("*", async (req, res, next) => {
 				
 			});
 			
-			console.log(out);
+			console.log(file, out);
 
 			if (out.auto) {
 				

@@ -131,7 +131,12 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 				
 			},
 
-			require: true
+			require: {
+
+				builtin: ["*"],
+				external: ["*"]
+
+			}
 			
 		}).run(code);
 		

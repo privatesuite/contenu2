@@ -49,7 +49,6 @@ async function wwwRun (req, res, other) {
 
 		if (match) {
 
-			console.log(routes[route]);
 			if (routes[route].handler) {
 				
 				req.params = match;
@@ -165,6 +164,8 @@ router.all("*", async (req, res, next) => {
 				
 			});
 			
+			console.log(out);
+
 			if (out.auto) {
 				
 				if (fs.existsSync(file) && !fs.statSync(file).isDirectory()) _();

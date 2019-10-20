@@ -130,13 +130,15 @@ router.get("/file/:file", (req, res) => {
 
 	if (fs.existsSync(file) && !fs.statSync(file).isDirectory()) {
 		
-		res.writeHead(200, {
+		// res.writeHead(200, {
 			
-			"Content-Type": "application/octet-stream"
+		// 	"Content-Type": "application/octet-stream"
 			
-		});
+		// });
 		
-		fs.createReadStream(file).pipe(res);
+		// fs.createReadStream(file).pipe(res);
+
+		res.sendFile(file);
 		
 	} else {
 		

@@ -49,6 +49,7 @@ async function wwwRun (req, res, other) {
 
 		if (match) {
 
+			console.log(routes[route]);
 			if (routes[route].handler) {
 				
 				req.params = match;
@@ -94,7 +95,7 @@ function initRoutes (code = wwwSrc) {
 				
 				auto (_routes) {
 					
-					if (typeof route === "string") _routes = [_routes];
+					if (typeof _routes === "string") _routes = [_routes];
 					
 					for (const route of _routes) {
 						

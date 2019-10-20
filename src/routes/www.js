@@ -66,8 +66,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 				if (req.method.toLowerCase() !== method) return;
 				if (complete) return;
 				
-				console.log(req.url);
-				let match = reqPath(route, req.url);
+				let match = reqPath(route, req.path);
 				
 				if (match) {
 					

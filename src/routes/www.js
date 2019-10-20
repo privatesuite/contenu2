@@ -12,7 +12,7 @@ const wwwFolder = path.join(__dirname, "..", "..", "www");
 
 let routes = {};
 
-async function wwwRun (req, res, other) {
+function wwwRun (req, res, other) {
 	
 	const render = (view, opts) => new Promise((resolve, reject) => {
 		

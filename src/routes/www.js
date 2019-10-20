@@ -10,21 +10,9 @@ const reqPath = require("../utils/req_path");
 let wwwSrc;
 const wwwFolder = path.join(__dirname, "..", "..", "www");
 
-async function wwwRun (req, res, code = wwwSrc, other) {
-	
-	res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
-	res.ejs = async (file, params, contentType) => {
-	
-		res.set("Content-Type", contentType || "text/html");
-		res.send(await render(path.join(wwwFolder, file), { db, ...params }));
+let routes = {};
 
-	}
-
-	let methods = {};
-	let complete = false;
-	
-	let error;
-	let notFound;
+async function wwwRun (req, res, other) {
 	
 	const render = (view, opts) => new Promise((resolve, reject) => {
 		
@@ -38,7 +26,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			html.then(_ => resolve(html));
 			html.catch(_ => {
 
-				if (error) error(req, res, html);
+				if (routes["__error__"]) routes["__error__"](req, res, html);
 				complete = true;
 
 			});
@@ -46,45 +34,50 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 		});
 		
 	});
+
+	res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
+	res.ejs = async (file, params, contentType) => {
 	
+		res.set("Content-Type", contentType || "text/html");
+		res.send(await render(path.join(wwwFolder, file), { db, ...params }));
+
+	}
+
+	for (const route of Object.keys(routes).filter(_ => !_.startsWith("__") && _.method === req.method.toLowerCase())) {
+	
+		let match = reqPath(route, req.path);
+
+		if (match) {
+
+			if (route.callback) {
+				
+				route.callback(req, res);
+				return {};
+
+			} else if (route.auto) return {auto: true};
+
+		}
+
+	}
+
+	if (routes["__notFound__"]) routes["__notFound__"](req, res);
+	else res.end();
+
+}
+
+function initRoutes (code = wwwSrc) {
+
 	return new Promise((resolve, reject) => {
 		
 		for (const method of http.METHODS.map(_ => _.toLowerCase())) {
 			
 			methods[method] = (route, handler) => {
 				
-				// if (req.method.toLowerCase() === "head") {
+				routes[route] = {
 
-				// 	complete = true;
-				// 	res.status(200);
+					method,
+					handler
 
-				// 	res.end();
-				// 	return;
-
-				// }
-				if (req.method.toLowerCase() !== method) return;
-				if (complete) return;
-				
-				let match = reqPath(route, req.path);
-				
-				if (match) {
-					
-					req.params = match;
-					complete = true;
-				
-					try {
-						
-						handler(req, res);
-						
-					} catch (e) {
-						
-						if (error) error(req, res, e);
-						complete = true;
-						// throw e;
-						
-					}
-					resolve({  });
-					
 				}
 				
 			}
@@ -101,14 +94,11 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 					
 					for (const route of routes) {
 						
-						let match = reqPath(route, req.url);
-						
-						if (match) {
-							
-							complete = true;
-							resolve({ auto: true });
-							return;
-							
+						routes[route] = {
+
+							method: "get",
+							auto: true
+		
 						}
 						
 					}
@@ -117,13 +107,13 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 				
 				error (callback) {
 					
-					error = callback;
+					routes["__error__"] = callback;
 					
 				},
 				
 				notFound (callback) {
 					
-					notFound = callback;
+					routes["__notFound__"] = callback;
 					
 				},
 				
@@ -140,19 +130,8 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 		}).run(code);
 		
-		setTimeout(() => {
-			
-			if (!complete) {
-				
-				if (notFound) notFound(req, res);
-				else resolve({ ignore: true });
-				
-			}
-			
-		}, 10);
-		
 	});
-	
+
 }
 
 const router = express.Router();
@@ -168,24 +147,6 @@ router.all("*", async (req, res, next) => {
 	if (wwwSrc || fs.existsSync(file)) {
 		
 		function _ (_file = file) {
-			
-			/*const stat = fs.statSync(_file);
-			
-			res.writeHead(status, {
-				
-				"Content-Type": mime.getType(_file) || "application/octet-stream",
-				"Content-Length": stat.size
-				
-			});
-			
-			if (req.method.toLowerCase() === "head") {
-
-				res.end();
-				return;
-
-			}
-
-			fs.createReadStream(_file).pipe(res);*/
 
 			res.sendFile(_file);
 			
@@ -193,7 +154,7 @@ router.all("*", async (req, res, next) => {
 		
 		if (!wwwSrc) _(); else {
 			
-			const out = await wwwRun(req, res, wwwSrc, {
+			const out = await wwwRun(req, res, {
 				
 				file: _
 				
@@ -227,4 +188,10 @@ router.all("*", async (req, res, next) => {
 });
 
 module.exports = router;
-module.exports.sync = () => wwwSrc = (fs.existsSync(path.join(wwwFolder, "www.js")) ? fs.readFileSync(path.join(wwwFolder, "www.js")).toString() : undefined);
+module.exports.sync = () => {
+
+	routes = {};
+	wwwSrc = (fs.existsSync(path.join(wwwFolder, "www.js")) ? fs.readFileSync(path.join(wwwFolder, "www.js")).toString() : undefined);
+	initRoutes(wwwSrc);
+
+}

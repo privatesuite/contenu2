@@ -14,7 +14,12 @@ const wwwFolder = path.join(__dirname, "..", "..", "www");
 async function wwwRun (req, res, code = wwwSrc, other) {
 	
 	res.file = (file, status) => other.file(path.join(wwwFolder, file), status);
-	res.ejs = async (file, params) => res.end(await render(path.join(wwwFolder, file), { db, ...params }));
+	res.ejs = async (file, params, contentType) => {
+	
+		res.set("Content-Type", contentType || "text/html");
+		res.end(await render(path.join(wwwFolder, file), { db, ...params }));
+
+	}
 
 	let methods = {};
 	let complete = false;

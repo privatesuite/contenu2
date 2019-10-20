@@ -67,7 +67,7 @@ async function wwwRun (req, res, other) {
 
 function initRoutes (code = wwwSrc) {
 
-	let method = {};
+	let methods = {};
 
 	return new Promise((resolve, reject) => {
 		

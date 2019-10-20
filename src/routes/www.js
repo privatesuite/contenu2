@@ -163,8 +163,6 @@ router.all("*", async (req, res, next) => {
 				file: _
 				
 			});
-			
-			console.log(file, out);
 
 			if (out.auto) {
 				

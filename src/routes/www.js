@@ -67,6 +67,8 @@ async function wwwRun (req, res, other) {
 
 function initRoutes (code = wwwSrc) {
 
+	let method = {};
+
 	return new Promise((resolve, reject) => {
 		
 		for (const method of http.METHODS.map(_ => _.toLowerCase())) {

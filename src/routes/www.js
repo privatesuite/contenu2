@@ -3,7 +3,6 @@ const fs = require("fs");
 const vm2 = require("vm2");
 const path = require("path");
 const http = require("http");
-const mime = require("mime");
 const express = require("express");
 
 const reqPath = require("../utils/req_path");
@@ -92,7 +91,7 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 		}
 		
-		new vm2.VM({
+		new vm2.NodeVM({
 			
 			sandbox: {
 				
@@ -130,7 +129,9 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 				
 				...methods				
 				
-			}
+			},
+
+			require: true
 			
 		}).run(code);
 		

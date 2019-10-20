@@ -49,6 +49,15 @@ async function wwwRun (req, res, code = wwwSrc, other) {
 			
 			methods[method] = (route, handler) => {
 				
+				if (req.method.toLowerCase() === "head") {
+
+					complete = true;
+					res.status(200);
+
+					res.end();
+					return;
+
+				}
 				if (req.method.toLowerCase() !== method) return;
 				if (complete) return;
 				
@@ -158,6 +167,13 @@ router.all("*", async (req, res, next) => {
 				
 			});
 			
+			if (req.method.toLowerCase() === "head") {
+
+				res.end();
+				return;
+
+			}
+
 			fs.createReadStream(_file).pipe(res);
 			
 		}

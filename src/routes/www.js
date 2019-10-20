@@ -161,7 +161,7 @@ router.all("*", async (req, res, next) => {
 	
 	if (wwwSrc || fs.existsSync(file)) {
 		
-		function _ (_file = file, status = 200) {
+		function _ (_file = file) {
 			
 			/*const stat = fs.statSync(_file);
 			
@@ -181,7 +181,7 @@ router.all("*", async (req, res, next) => {
 
 			fs.createReadStream(_file).pipe(res);*/
 
-			res.status(status).sendFile(_file);
+			res.sendFile(_file);
 			
 		}
 		

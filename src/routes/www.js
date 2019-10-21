@@ -92,6 +92,8 @@ function initRoutes (code = wwwSrc) {
 			
 			sandbox: {
 				
+				db,
+
 				auto (_routes) {
 					
 					if (typeof _routes === "string") _routes = [_routes];

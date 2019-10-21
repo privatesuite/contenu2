@@ -1,6 +1,7 @@
 # Vendor
 
 /node_modules
+/package-lock.json
 
 # Application
 

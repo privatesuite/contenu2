@@ -33,7 +33,7 @@ function (db) {
 
 		accessible () {
 
-			return this.findElements(_ => _.fields.api_access);
+			return this.findElements(_ => _.fields.api_access === true);
 
 		},
 		

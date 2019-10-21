@@ -64,7 +64,8 @@ router.get("/users", (req, res) => {
 
 router.get("/elements", (req, res) => {
 	
-	res.json(db.elements.elements().filter(_ => _.fields.api_access));
+	if (permissions.isTokenAdmin(permissions.tokenFromRequest(req))) res.json(db.elements.elements());
+	else res.json(db.elements.accessible());
 	// res.json(db.elements.elements().map(_ => {const t = db.templates.findTemplate(__ => __.id === _.template); if (t) _.template_name = t.name; else _.template_name = "Unknown"; return _;}));
 	
 });
@@ -79,7 +80,7 @@ router.get("/element/:id", (req, res, next) => {
 	
 	const element = db.elements.findElement(_ => _.id === req.params.id);
 	
-	if (element && element.fields.api_access) res.json(element);
+	if (element && (element.fields.api_access || permissions.isTokenAdmin(permissions.tokenFromRequest(req)))) res.json(element);
 	else next();
 	
 });

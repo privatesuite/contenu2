@@ -212,7 +212,15 @@
 			
 			let element;
 			if (document.querySelector("*[name=element-id]").content === "new") element = {fields: {}};
-			else element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`)).json();
+			else element = await (await fetch(`/api/element/${document.querySelector("*[name=element-id]").content}`, {
+
+				headers: {
+
+					"Authorization": `Bearer ${getCookie("token")}`
+
+				}
+
+			})).json();
 			// const template = document.querySelector("*[name=template-id]").content ? await (await fetch(`/api/template/${document.querySelector("*[name=template-id]").content}`)).json() : undefined;
 
 			for (const fieldName of Object.keys(element.fields)) {

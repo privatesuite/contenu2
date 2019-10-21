@@ -30,6 +30,12 @@ function (db) {
 			return this.findElements(_ => true);
 
 		},
+
+		accessible () {
+
+			return this.findElements(_ => _.fields.api_access);
+
+		},
 		
 		editElement (id, data) {
 

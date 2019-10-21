@@ -23,6 +23,8 @@ function wwwRun (req, res, other) {
 			
 		}, (err, html) => {
 			
+			console.log(err, html);
+
 			html.then(_ => resolve(html));
 			html.catch(_ => {
 

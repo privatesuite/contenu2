@@ -23,13 +23,17 @@ function wwwRun (req, res, other) {
 			
 		}, (err, html) => {
 			
-			console.log(err, html);
+			if (err) {
+
+				if (routes["__error__"]) routes["__error__"](req, res, html);
+				return;
+
+			}
 
 			html.then(_ => resolve(html));
 			html.catch(_ => {
 
 				if (routes["__error__"]) routes["__error__"](req, res, html);
-				complete = true;
 
 			});
 			

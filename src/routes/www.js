@@ -100,9 +100,6 @@ function initRoutes (code = wwwSrc) {
 				
 				db,
 
-				__dirname: wwwFolder,
-				__filename: path.join(wwwFolder, "www.js"),
-
 				auto (_routes) {
 					
 					if (typeof _routes === "string") _routes = [_routes];
@@ -143,7 +140,7 @@ function initRoutes (code = wwwSrc) {
 
 			}
 			
-		}).run(code);
+		}).run("", path.join(wwwFolder, "www.js"));
 		
 	});
 

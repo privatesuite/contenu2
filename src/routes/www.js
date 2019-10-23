@@ -95,10 +95,13 @@ function initRoutes (code = wwwSrc) {
 		}
 		
 		new vm2.NodeVM({
-			
+
 			sandbox: {
 				
 				db,
+
+				__dirname: wwwFolder,
+				__filename: path.join(wwwFolder, "www.js"),
 
 				auto (_routes) {
 					

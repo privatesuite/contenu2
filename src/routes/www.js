@@ -140,7 +140,7 @@ function initRoutes (code = wwwSrc) {
 
 			}
 			
-		}).run("", path.join(wwwFolder, "www.js"));
+		}).run(code, path.join(wwwFolder, "www.js"));
 		
 	});
 

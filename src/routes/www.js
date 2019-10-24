@@ -111,6 +111,7 @@ function initRoutes (code = wwwSrc) {
 
 							if (typeof time === "string") time = ms(time);
 
+							console.log(`[www] Task scheduled to occur in ${ms(time)}.`);
 							timeFrames.push(setTimeout(cb, time));
 
 						},
@@ -119,6 +120,7 @@ function initRoutes (code = wwwSrc) {
 
 							if (typeof time === "string") time = ms(time);
 
+							console.log(`[www] Task scheduled to occur in ${ms(time)}.`);
 							timeFrames.push(setInterval(cb, time));
 
 						}

@@ -168,8 +168,9 @@ function initRoutes (code = wwwSrc) {
 			}
 			
 		});
-		vm.
+		
 		vm.run(code, path.join(wwwFolder, "www.js"));
+
 	});
 
 }

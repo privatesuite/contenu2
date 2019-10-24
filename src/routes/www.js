@@ -1,5 +1,6 @@
 const db = require("../db");
 const fs = require("fs");
+const ms = require("ms");
 const vm2 = require("vm2");
 const path = require("path");
 const http = require("http");
@@ -7,7 +8,9 @@ const express = require("express");
 
 const reqPath = require("../utils/req_path");
 
+let vm;
 let wwwSrc;
+let timeFrames = [];
 const wwwFolder = path.join(__dirname, "..", "..", "www");
 
 let routes = {};
@@ -94,11 +97,35 @@ function initRoutes (code = wwwSrc) {
 			
 		}
 		
-		new vm2.NodeVM({
+		vm = new vm2.NodeVM({
 
 			sandbox: {
 				
 				db,
+
+				schedule (cb) {
+
+					return {
+
+						in (time) {
+
+							if (typeof time === "string") time = ms(time);
+
+							timeFrames.push(setTimeout(cb, time));
+
+						},
+
+						every (time) {
+
+							if (typeof time === "string") time = ms(time);
+
+							timeFrames.push(setInterval(cb, time));
+
+						}
+
+					}
+
+				},
 
 				auto (_routes) {
 					
@@ -140,8 +167,9 @@ function initRoutes (code = wwwSrc) {
 
 			}
 			
-		}).run(code, path.join(wwwFolder, "www.js"));
-		
+		});
+		vm.
+		vm.run(code, path.join(wwwFolder, "www.js"));
 	});
 
 }
@@ -204,6 +232,19 @@ module.exports.sync = () => {
 
 	routes = {};
 	wwwSrc = (fs.existsSync(path.join(wwwFolder, "www.js")) ? fs.readFileSync(path.join(wwwFolder, "www.js")).toString() : undefined);
-	initRoutes(wwwSrc);
+	
+	timeFrames.map(_ => {
+
+		clearTimeout(_);
+		clearInterval(_);
+
+	});
+	timeFrames = [];
+
+	setTimeout(() => {
+
+		initRoutes(wwwSrc);
+
+	}, 10);
 
 }

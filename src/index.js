@@ -9,6 +9,12 @@ const compression = require("compression");
 
 const args = require("minimist")(process.argv.slice(2));
 
+if (args.ignoreInvalidCertificate) {
+
+	process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+}
+
 (async () => {
 	
 	await db.init();

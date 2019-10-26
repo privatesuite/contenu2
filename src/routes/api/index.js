@@ -4,18 +4,50 @@ const path = require("path");
 const clone = require("../../utils/clone");
 const sha512 = require("js-sha512");
 const express = require("express");
+
 const session = require("../../utils/session");
+const security = require("../../utils/security");
 const permissions = require("../../utils/permissions");
 
 const router = express.Router();
 
 router.use(require("cors")());
 
+const loginAttempts = new Map();
+
 router.post("/login", (req, res) => {
 	
 	const respondWith = req.query.respond_with || "json";
 	const user = db.users.authenticate(req.body.username, req.body.password);
 	
+	if (user) {
+		
+		console.log(`[security] ${user.username} successfully logged in from IP ${req.connection.remoteAddress}.!`);
+		loginAttempts.set(user.username, 0);
+		
+	} else {
+
+		console.log(`[security] ${req.body.username} has attempted to log in ${(loginAttempts.get(req.body.username) || 0) + 1} time(s) from IP ${req.connection.remoteAddress}.`);
+		loginAttempts.set(req.body.username, (loginAttempts.get(req.body.username) || 0) + 1);
+
+	}
+
+	if (loginAttempts.get(req.body.username) >= 3) {
+
+		const user1 = db.users.findUser(_ => _.username === req.body.username);
+
+		if (user1) {
+
+			const email = user1.email;
+			console.log(`[security] Sending email to ${email}.`)
+
+			security.sendLoginAttemptEmail(req.body.username, email, req.connection.remoteAddress);
+			loginAttempts.set(req.body.username, 0);
+
+		}
+
+	}
+
 	if (respondWith === "cookies") {
 		
 		if (user) {

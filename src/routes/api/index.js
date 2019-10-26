@@ -298,6 +298,12 @@ router.post("/user/:id/edit", async (req, res, next) => {
 			
 		} else {
 			
+			if (req.body.password) {
+
+				security.sendPasswordChangeEmail(req.body.username, email, req.connection.remoteAddress);
+
+			}
+
 			await db.users.editUser(_user._id, {
 				
 				..._user,

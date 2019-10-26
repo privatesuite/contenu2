@@ -45,18 +45,18 @@ module.exports = {
 
 	},
 
-	async sendLoginAttemptEmail (user, to, ip) {
+	async sendEmail (view, subject, options) {
 
 		ip = processIP(ip);
 
 		// console.log(`${config().security.email.from} -> ${to}`)
 
-		ejs.renderFile(path.join(__dirname, "..", "..", "views", "emails", "login_attempt.ejs"), {
+		ejs.renderFile(path.join(__dirname, "..", "..", "views", "emails", view), {
 
-			user,
-			ip,
+			username: options.username,
+			ip: options.ip,
 			host: config().server.host,
-			location: await this.locate(ip)
+			location: await this.locate(options.ip)
 
 		}, async (err, html) => {
 
@@ -67,12 +67,36 @@ module.exports = {
 				from: config().security.email.from,
 				to,
 
-				subject: "Login Attempt",
+				subject: `[${config().server.host}] ${subject}`,
 				html,
 				text: "Please open this email in order to view its content"
 				
 			});
 
+		});
+
+	},
+
+	sendLoginAttemptEmail (username, to, ip) {
+
+		this.sendEmail("login_attempt.ejs", "Login Attempt", {
+			
+			username,
+			to,
+			ip
+			
+		});
+
+	},
+
+	sendPasswordChangeEmail (username, to, ip) {
+
+		this.sendEmail("password_change.ejs", "Password Change", {
+			
+			username,
+			to,
+			ip
+			
 		});
 
 	}

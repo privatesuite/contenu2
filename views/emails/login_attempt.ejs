@@ -10,7 +10,7 @@
 
 		<h3>Hi <%- username %>!</h3>
 
-		<p>Someone attempted to log onto your account <strong>at <%- new Date().toLocaleString() %></strong> from the IP address <strong><%- ip %></strong> which is located at <strong><%- location.city %>, <%- location.region %>, <%- location.country %></strong>. If you didn't try to log onto your account at that time, please <strong>make sure that your password is safe and sound and that none of your affiliated accounts are compromised.</strong></p>
+		<p>Someone attempted to log onto your account <strong>at <%- new Date().toString() %></strong> from the IP address <strong><%- ip %></strong> which is located at <strong><%- location.city %>, <%- location.region %>, <%- location.country %></strong>. If you didn't try to log onto your account at that time, please <strong>make sure that your password is safe and sound and that none of your affiliated accounts are compromised.</strong></p>
 
 		<p>Change your password here: <a href="https://<%- host %>/admin/users">https://<%- host %>/admin/users</a></p>
 

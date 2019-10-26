@@ -65,7 +65,7 @@ module.exports = {
 			await this.createTransport().sendMail({
 
 				from: config().security.email.from,
-				to,
+				to: options.to,
 
 				subject: `[${config().server.host}] ${subject}`,
 				html,

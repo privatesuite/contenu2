@@ -1,12 +1,8 @@
-<% include style.ejs %>
+<% include partials/style.ejs %>
 
 <div id="message">
 
-	<div class="psm_background" style="height: 125px; width: 100%;">
-
-
-
-	</div>
+	<% include partials/header.ejs %>
 
 	<div id="body">
 
@@ -14,16 +10,12 @@
 
 		<h3>Hi <%- user %>!</h3>
 
-		<p>Someone attempted to log onto your account <strong>at <%- new Date().toLocaleString() %></strong> from the IP address <strong><%- ip %></strong> which is located at <strong><%- location.city %>, <%- location.country %></strong>. If you didn't try to log onto your account at that time, please change your password and contact your administrator as soon as possible!</p>
+		<p>Someone attempted to log onto your account <strong>at <%- new Date().toLocaleString() %></strong> from the IP address <strong><%- ip %></strong> which is located at <strong><%- location.city %>, <%- location.region %>, <%- location.country %></strong>. If you didn't try to log onto your account at that time, please <strong>be aware of your digital surroundings.</strong></p>
 
 		<p>Change your password here: <a href="https://<%- host %>/admin/users">https://<%- host %>/admin/users</a></p>
 
 	</div>
 
-	<footer>
-
-		<p style="font-weight: 700;">To verify that this email or a similar email is in fact authentic, verify that the <i>from</i> email address is the address you regularly receive security emails from. If you're unsure of this email's authenticity, simple copy the links in plaintext and paste them into your URL bar.</p>
-
-	</footer>
+	<% include partials/footer.ejs %>
 
 </div>

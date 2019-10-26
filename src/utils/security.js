@@ -4,6 +4,12 @@ const config = require("./config");
 const nodemailer = require("nodemailer");
 const iplocation = require("iplocation").default;
 
+function processIP (ip) {
+
+	return ip.replace("::ffff:", "");
+
+}
+
 module.exports = {
 
 	async locate (ip) {
@@ -41,7 +47,9 @@ module.exports = {
 
 	async sendLoginAttemptEmail (user, to, ip) {
 
-		console.log(`${config().security.email.from} -> ${to}`)
+		ip = processIP(ip);
+
+		// console.log(`${config().security.email.from} -> ${to}`)
 
 		ejs.renderFile(path.join(__dirname, "..", "..", "views", "emails", "login_attempt.ejs"), {
 

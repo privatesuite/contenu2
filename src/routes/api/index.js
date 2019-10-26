@@ -300,7 +300,7 @@ router.post("/user/:id/edit", async (req, res, next) => {
 			
 			if (req.body.password) {
 
-				security.sendPasswordChangeEmail(req.body.username, db.users.findUser(_ => _._id === _user._id), req.connection.remoteAddress);
+				security.sendPasswordChangeEmail(req.body.username, _user.email, req.connection.remoteAddress);
 
 			}
 

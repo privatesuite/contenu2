@@ -47,7 +47,7 @@ module.exports = {
 
 	async sendEmail (view, subject, options) {
 
-		ip = processIP(ip);
+		options.ip = processIP(options.ip);
 
 		// console.log(`${config().security.email.from} -> ${to}`)
 

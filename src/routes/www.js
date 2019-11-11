@@ -28,7 +28,7 @@ function wwwRun (req, res, other) {
 			
 			if (err) {
 
-				if (routes.find(_ => _.route === "__error__")) routes.find(_ => _.route === "__error__")(req, res, html);
+				if (routes.find(_ => _.route === "__error__")) routes.find(_ => _.route === "__error__").handler(req, res, html);
 				return;
 
 			}
@@ -36,7 +36,7 @@ function wwwRun (req, res, other) {
 			html.then(_ => resolve(html));
 			html.catch(_ => {
 
-				if (routes.find(_ => _.route === "__error__")) routes.find(_ => _.route === "__error__")(req, res, html);
+				if (routes.find(_ => _.route === "__error__")) routes.find(_ => _.route === "__error__").handler(req, res, html);
 
 			});
 			
@@ -70,7 +70,7 @@ function wwwRun (req, res, other) {
 
 	}
 
-	if (routes.find(_ => _.route === "__notFound__")) routes.find(_ => _.route === "__notFound__")(req, res);
+	if (routes.find(_ => _.route === "__notFound__")) routes.find(_ => _.route === "__notFound__").handler(req, res);
 	else res.end();
 	return {};
 
@@ -153,7 +153,7 @@ function initRoutes (code = wwwSrc) {
 					routes.push({
 						
 						route: "__error__",
-						callback
+						handler: callback
 						
 					});
 					
@@ -165,7 +165,7 @@ function initRoutes (code = wwwSrc) {
 					routes.push({
 						
 						route: "__notFound__",
-						callback
+						handler: callback
 						
 					});
 					
@@ -246,7 +246,7 @@ router.all("*", async (req, res, next) => {
 module.exports = router;
 module.exports.sync = () => {
 
-	routes = {};
+	routes = [];
 	wwwSrc = (fs.existsSync(path.join(wwwFolder, "www.js")) ? fs.readFileSync(path.join(wwwFolder, "www.js")).toString() : undefined);
 	
 	timeFrames.map(_ => {

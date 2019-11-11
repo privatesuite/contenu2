@@ -13,7 +13,7 @@ let wwwSrc;
 let timeFrames = [];
 const wwwFolder = path.join(__dirname, "..", "..", "www");
 
-let routes = {};
+let routes = [];
 
 function wwwRun (req, res, other) {
 	
@@ -28,7 +28,7 @@ function wwwRun (req, res, other) {
 			
 			if (err) {
 
-				if (routes["__error__"]) routes["__error__"](req, res, html);
+				if (routes.find(_ => _.route === "__error__")) routes.find(_ => _.route === "__error__")(req, res, html);
 				return;
 
 			}
@@ -36,7 +36,7 @@ function wwwRun (req, res, other) {
 			html.then(_ => resolve(html));
 			html.catch(_ => {
 
-				if (routes["__error__"]) routes["__error__"](req, res, html);
+				if (routes.find(_ => _.route === "__error__")) routes.find(_ => _.route === "__error__")(req, res, html);
 
 			});
 			
@@ -52,25 +52,25 @@ function wwwRun (req, res, other) {
 
 	}
 
-	for (const route of Object.keys(routes).filter(_ => !_.startsWith("__") && routes[_].method === req.method.toLowerCase())) {
+	for (const route of routes.filter(_ => !_.route.startsWith("__") && _.method === req.method.toLowerCase())) {
 
-		let match = reqPath(route, req.path);
+		let match = reqPath(route.route, req.path);
 
 		if (match) {
 
-			if (routes[route].handler) {
+			if (route.handler) {
 				
 				req.params = match;
-				routes[route].handler(req, res);
+				route.handler(req, res);
 				return {};
 
-			} else if (routes[route].auto) return {auto: true};
+			} else if (route.auto) return {auto: true};
 
 		}
 
 	}
 
-	if (routes["__notFound__"]) routes["__notFound__"](req, res);
+	if (routes.find(_ => _.route === "__notFound__")) routes.find(_ => _.route === "__notFound__")(req, res);
 	else res.end();
 	return {};
 
@@ -85,14 +85,15 @@ function initRoutes (code = wwwSrc) {
 		for (const method of http.METHODS.map(_ => _.toLowerCase())) {
 			
 			methods[method] = (route, handler) => {
-				
-				routes[route] = {
 
+				routes.push({
+
+					route,
 					method,
 					handler
 
-				}
-				
+				});
+
 			}
 			
 		}
@@ -135,12 +136,13 @@ function initRoutes (code = wwwSrc) {
 					
 					for (const route of _routes) {
 						
-						routes[route] = {
+						routes.push({
 
+							route,
 							method: "get",
 							auto: true
 		
-						}
+						})
 						
 					}
 					
@@ -148,13 +150,24 @@ function initRoutes (code = wwwSrc) {
 				
 				error (callback) {
 					
-					routes["__error__"] = callback;
+					routes.push({
+						
+						route: "__error__",
+						callback
+						
+					});
 					
 				},
 				
 				notFound (callback) {
 					
-					routes["__notFound__"] = callback;
+					
+					routes.push({
+						
+						route: "__notFound__",
+						callback
+						
+					});
 					
 				},
 				

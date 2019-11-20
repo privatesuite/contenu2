@@ -198,7 +198,7 @@ router.all("*", async (req, res, next) => {
 	res.setHeader("Access-Control-Allow-Methods", "*");
 	res.setHeader("Access-Control-Allow-Headers", "*");
 	
-	let file = path.join(wwwFolder, req.url === "/" ? "index.html" : req.url);
+	let file = path.join(wwwFolder, req.path === "/" ? "index.html" : req.path);
 	
 	if (wwwSrc || fs.existsSync(file)) {
 		

@@ -208,6 +208,8 @@
 
 			await SashimiReady;
 
+			if (Sashimi.setImageRoot) Sashimi.setImageRoot("/api/file/");
+
 			const templates = await (await fetch("/api/templates")).json();
 			
 			let element;

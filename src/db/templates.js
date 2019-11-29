@@ -1,4 +1,4 @@
-const Streamlet = require("streamlet");
+const Streamlet = require("streamletdb");
 
 module.exports =
 

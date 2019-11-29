@@ -78,7 +78,7 @@
 					
 					<div class="form">
 						
-						<input type="text" id="clone_url" placeholder="Repository" class="line">
+						<input type="url" id="clone_url" placeholder="Repository" class="line input" autocomplete="url">
 						<input type="text" id="clone_branch" value="master" placeholder="Branch or tag"> <button id="clone">Clone</button>
 						
 					</div>
@@ -93,7 +93,7 @@
 
 						<li style="color: <%- wwwFiles ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> exists <span class="tag blue">Required</span></li>
 						<li style="color: <%- wwwFiles && wwwFiles.find(_ => _.toLowerCase() === '.git') ? '#1e00ff' : '#ff6d6d' %>;"><code>www</code> is a git repository <span class="tag blue">Recommended</span></li>
-						<li style="color: <%- wwwFiles && wwwFiles.find(_ => _.toLowerCase() === 'index.html') ? '#1e00ff' : '#ff6d6d' %>;"><code>index.html</code> exists <span class="tag blue">Recommended</span></li>
+						<li style="color: <%- wwwFiles && wwwFiles.find(_ => _.toLowerCase() === 'index.html' || _.toLowerCase() === 'www.js') ? '#1e00ff' : '#ff6d6d' %>;"><code>index.html or www.js</code> exists <span class="tag blue">Recommended</span></li>
 
 					</ul>
 					
@@ -101,7 +101,18 @@
 				
 			</div>
 
-			<h2>File List</h2>
+			<h2>File Managemnet</h2>
+
+			<h3>Upload Files</h3>
+
+			<form method="POST" action="/api/files/upload?token=<%- cookies.token %>&redirect=<%- baseUrl %>/files" enctype="multipart/form-data">
+
+				<input type="file" name="files" multiple>
+				<input type="submit" value="Upload">
+			
+			</form>
+
+			<h3>Rename and Delete Files</h3>
 
 			<div class="list">
 
@@ -125,7 +136,7 @@
 
 							<div class="controls">
 
-								<button>Delete</button>
+								<button class="delete">Delete</button>
 
 							</div>
 
@@ -172,6 +183,32 @@
 				});
 
 				notify("Cloned!");
+
+			} else if (event.target.classList.contains("delete")) {
+
+				notify("Deleting...");
+
+				await fetch("/api/files/delete", {
+					
+					method: "POST",
+
+					headers: {
+
+						"Content-Type": "application/json",
+						"Authorization": `Bearer ${getCookie("token")}`
+
+					},
+
+					body: JSON.stringify({
+
+						file: event.target.parentElement.parentElement.querySelector("input").getAttribute("value") + event.target.parentElement.parentElement.querySelector("input").getAttribute("data-extension"),
+
+					})
+
+				});
+
+				notify(`Deleted <strong>${event.target.parentElement.parentElement.querySelector("input").getAttribute("value")}</strong>!`);
+				event.target.parentElement.parentElement.remove();
 
 			}
 

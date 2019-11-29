@@ -11,7 +11,7 @@ module.exports = {
 
 	tokenFromRequest (req) {
 
-		return this.tokenFromBearer(req.headers.authorization || "");
+		return req.cookies.token || req.body.token || req.query.token || this.tokenFromBearer(req.headers.authorization || "");
 
 	},
 

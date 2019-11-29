@@ -1,5 +1,5 @@
 const path = require("path");
-const Streamlet = require("streamlet");
+const Streamlet = require("streamletdb");
 
 const db = new Streamlet(path.join(__dirname, "..", "..", "database"));
 

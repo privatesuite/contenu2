@@ -3,7 +3,30 @@ const db = require("../../db");
 const path = require("path");
 const clone = require("../../utils/clone");
 const sha512 = require("js-sha512");
+const multer = require("multer");
 const express = require("express");
+
+const storage = multer.diskStorage({
+
+	destination (req, file, cb) {
+
+		cb(null, path.join(__dirname, "..", "..", "..", "files"));
+
+	},
+
+	filename (req, file, cb) {
+
+		cb(null, file.originalname);
+
+	}
+
+});
+
+const upload = multer({
+
+	storage
+
+});
 
 const session = require("../../utils/session");
 const security = require("../../utils/security");
@@ -22,12 +45,12 @@ router.post("/login", (req, res) => {
 	
 	if (user) {
 		
-		console.log(`[security] ${user.username} successfully logged in from IP ${req.connection.remoteAddress}.!`);
+		console.log(`(security) ${user.username} successfully logged in from IP ${req.connection.remoteAddress}.!`);
 		loginAttempts.set(user.username, 0);
 		
 	} else {
 
-		console.log(`[security] ${req.body.username} has attempted to log in ${(loginAttempts.get(req.body.username) || 0) + 1} time(s) from IP ${req.connection.remoteAddress}.`);
+		console.log(`(security) ${req.body.username} has attempted to log in ${(loginAttempts.get(req.body.username) || 0) + 1} time(s) from IP ${req.connection.remoteAddress}.`);
 		loginAttempts.set(req.body.username, (loginAttempts.get(req.body.username) || 0) + 1);
 
 	}
@@ -39,7 +62,7 @@ router.post("/login", (req, res) => {
 		if (user1) {
 
 			const email = user1.email;
-			console.log(`[security] Sending email to ${email}.`)
+			console.log(`(security) Sending email to ${email}.`)
 
 			security.sendLoginAttemptEmail(req.body.username, email, req.connection.remoteAddress);
 			loginAttempts.set(req.body.username, 0);
@@ -437,11 +460,49 @@ router.post("/clone", async (req, res) => {
 	
 });
 
+router.post("/files/upload", upload.array("files"), (req, res) => {
+
+	if (req.query.redirect) {
+
+		res.redirect(req.query.redirect);
+
+	} else res.json({
+
+		message: "success"
+
+	});
+
+});
+
 router.post("/files/rename", (req, res) => {
 	
 	if (typeof req.body.from === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.from)) && typeof req.body.to === "string") {
 		
 		fs.renameSync(path.join(__dirname, "..", "..", "..", "files", req.body.from), path.join(__dirname, "..", "..", "..", "files", req.body.to));
+		
+		res.json({
+			
+			message: "success"
+			
+		});
+		
+	} else {
+		
+		res.json({
+			
+			message: "invalid_body"
+			
+		});
+		
+	}
+	
+});
+
+router.post("/files/delete", (req, res) => {
+	
+	if (typeof req.body.file === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.file))) {
+		
+		fs.unlinkSync(path.join(__dirname, "..", "..", "..", "files", req.body.file));
 		
 		res.json({
 			

@@ -86,6 +86,7 @@ router.get("/files", (req, res) => {
 
 	res.render("admin/files", {
 
+		cookies: req.cookies,
 		baseUrl: req.baseUrl,
 
 		mime,

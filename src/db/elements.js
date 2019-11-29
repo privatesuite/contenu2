@@ -1,7 +1,7 @@
 // const jwt = require("jsonwebtoken");
 // const config = require("../utils/config");
 const sha512 = require("js-sha512");
-const Streamlet = require("streamlet");
+const Streamlet = require("streamletdb");
 
 module.exports =
 

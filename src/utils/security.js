@@ -34,6 +34,7 @@ module.exports = {
 			host: config().security.email.host,
 			port: config().security.email.port,
 
+			secure: true,
 			auth: {
 
 				user: config().security.email.username,

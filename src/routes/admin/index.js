@@ -4,6 +4,7 @@ const path = require("path");
 const mime = require("mime");
 const express = require("express");
 const session = require("../../utils/session");
+const plugins = require("../../plugins");
 const permissions = require("../../utils/permissions");
 
 const router = express.Router();
@@ -92,6 +93,17 @@ router.get("/files", (req, res) => {
 		mime,
 		files: fs.readdirSync(path.join(__dirname, "..", "..", "..", "files")),
 		wwwFiles: fs.existsSync(wwwPath) ? fs.readdirSync(wwwPath) : false
+
+	});
+
+});
+
+router.get("/plugins", (req, res) => {
+
+	res.render("admin/plugins", {
+
+		baseUrl: req.baseUrl,
+		plugins: plugins.getPlugins()		
 
 	});
 

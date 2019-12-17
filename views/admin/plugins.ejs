@@ -15,11 +15,31 @@
 			
 			<h1>Plugins</h1>
 
-			<div class="panel">
+			<% if (plugins.length === 0) { %>
 
-				
+				<div class="panel">
 
-			</div>
+					<i>Hmm... it seems that you have no plugins installed. Come back here once you <a href="">install a plugin</a>.</i>
+	
+				</div>
+
+			<% } else { %>
+
+				<div class="list">
+
+					<% for (const plugin of plugins) { %>
+
+						<a href="<%- plugin.config().href || '#' %>" style="text-decoration: none;">
+
+							<h3><%- plugin.config().displayName || plugin.config().name %></h3>
+
+						</a>
+
+					<% } %>
+
+				</div>
+
+			<% } %>
 
 		</div>
 		

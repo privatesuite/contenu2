@@ -5,6 +5,7 @@ const http = require("http");
 const https = require("https");
 const sha512 = require("js-sha512");
 const config = require("./utils/config");
+const plugins = require("./plugins");
 const express = require("express");
 const compression = require("compression");
 
@@ -56,8 +57,18 @@ if (args.ignoreInvalidCertificate) {
 
 	}
 
+	if (!fs.existsSync(path.join(__dirname, "..", "plugins"))) {
+
+		console.log(`(core) Creating "plugins" directory`);
+		fs.mkdirSync(path.join(__dirname, "..", "plugins"));
+
+	}
+
 	console.log(`(core) Starting Contenu with config "${args.config || "dev"}"`);
 	config.loadConfig(path.join(__dirname, "..", "config", (args.config || "dev") + ".conf"));
+
+	plugins.load();
+	console.log("(core) Plugins loaded!");
 
 	const app = express();
 	

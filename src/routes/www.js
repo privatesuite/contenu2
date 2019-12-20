@@ -190,10 +190,14 @@ function initRoutes (code = wwwSrc) {
 
 }
 
+let before = [];
+let after = [];
 const router = express.Router();
 
 router.all("*", async (req, res, next) => {
 	
+	for (const b of before) b(req, res);
+
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	res.setHeader("Access-Control-Allow-Methods", "*");
 	res.setHeader("Access-Control-Allow-Headers", "*");
@@ -238,12 +242,17 @@ router.all("*", async (req, res, next) => {
 	} else {
 		
 		next();
+		return;
 		
 	}
 	
+	for (const a of after) a(req, res);
+
 });
 
 module.exports = router;
+module.exports.before = f => before.push(f);
+module.exports.after = f => after.push(f);
 module.exports.sync = () => {
 
 	routes = [];

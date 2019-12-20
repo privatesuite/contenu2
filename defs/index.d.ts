@@ -4,6 +4,7 @@ declare module "contenu" {
 
 	namespace routes {
 
+		const www = (await import("../src/routes/www")).default;
 		const api = (await import("../src/routes/api")).default;
 		const admin = (await import("../src/routes/admin")).default;
 

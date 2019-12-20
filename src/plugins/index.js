@@ -43,6 +43,7 @@ class Plugin {
 
 						routes: {
 
+							www: require("../routes/www"),
 							api,
 							admin: require("../routes/admin")
 

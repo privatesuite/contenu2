@@ -24,6 +24,8 @@ router.use((req, res, next) => {
 
 	}
 
+	res.locals["baseUrl"] = req.baseUrl;
+
 	next();
 
 });

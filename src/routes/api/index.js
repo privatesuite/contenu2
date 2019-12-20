@@ -476,8 +476,8 @@ router.post("/files/upload", upload.array("files"), (req, res) => {
 
 router.post("/files/rename", (req, res) => {
 	
-	if (typeof req.body.from === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.from)) && typeof req.body.to === "string") {
-		
+	if (typeof req.body.from === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.from)) && typeof req.body.to === "string" && req.body.from.indexOf("..") === -1 && req.body.to.indexOf("..") === -1) {
+
 		fs.renameSync(path.join(__dirname, "..", "..", "..", "files", req.body.from), path.join(__dirname, "..", "..", "..", "files", req.body.to));
 		
 		res.json({
@@ -500,7 +500,7 @@ router.post("/files/rename", (req, res) => {
 
 router.post("/files/delete", (req, res) => {
 	
-	if (typeof req.body.file === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.file))) {
+	if (typeof req.body.file === "string" && fs.existsSync(path.join(__dirname, "..", "..", "..", "files", req.body.file)) && req.body.file.indexOf("..") === -1) {
 		
 		fs.unlinkSync(path.join(__dirname, "..", "..", "..", "files", req.body.file));
 		

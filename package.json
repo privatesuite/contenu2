@@ -15,7 +15,7 @@
     "minimist": "^1.2.0",
     "ms": "^2.1.2",
     "multer": "^1.4.2",
-    "nodemailer": "^6.3.1",
+    "nodemailer": "^6.4.16",
     "path-to-regexp": "^3.1.0",
     "rimraf": "^3.0.0",
     "streamletdb": "^1.0.0",
